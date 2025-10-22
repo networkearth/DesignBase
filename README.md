@@ -40,7 +40,7 @@ Designs get overwhelming fast. Even simple web apps have many pieces to build an
 
 ### Why These Matter
 
-**User Stories** ensure you understand what you're building. Without them, you can't build well or avoid breaking things.
+**User Cases** ensure you understand what you're building. Without them, you can't build well or avoid breaking things.
 
 **Interfaces** define how components fit into the ecosystem—they're the face of an otherwise black box.
 
