@@ -1,0 +1,118 @@
+/* CheckBoxPicker Styles */
+
+.checkbox-picker {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.checkbox-picker-title {
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: #212529;
+}
+
+/* Grid Container */
+.checkbox-picker-grid {
+  display: grid;
+  width: 100%;
+}
+
+/* Horizontal Layout Justification */
+.checkbox-picker-horizontal.checkbox-picker-left .checkbox-picker-grid {
+  justify-content: flex-start;
+}
+
+.checkbox-picker-horizontal.checkbox-picker-right .checkbox-picker-grid {
+  justify-content: flex-end;
+}
+
+.checkbox-picker-horizontal.checkbox-picker-center .checkbox-picker-grid {
+  justify-content: center;
+}
+
+/* Vertical Layout Justification */
+.checkbox-picker-vertical.checkbox-picker-top .checkbox-picker-grid {
+  align-content: flex-start;
+}
+
+.checkbox-picker-vertical.checkbox-picker-bottom .checkbox-picker-grid {
+  align-content: flex-end;
+}
+
+.checkbox-picker-vertical.checkbox-picker-center .checkbox-picker-grid {
+  align-content: center;
+}
+
+/* Box Styling */
+.checkbox-picker-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+  color: #212529;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+}
+
+.checkbox-picker-box:hover {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+.checkbox-picker-box:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.checkbox-picker-box.selected {
+  background-color: #0d6efd;
+  color: #ffffff;
+  border-color: #0d6efd;
+}
+
+.checkbox-picker-box.selected:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+/* Size Variations */
+.checkbox-picker-small .checkbox-picker-title {
+  font-size: 0.875rem;
+}
+
+.checkbox-picker-small .checkbox-picker-box {
+  font-size: 0.875rem;
+  padding: 0.5rem;
+}
+
+.checkbox-picker-small .checkbox-picker-grid {
+  gap: 0.5rem;
+}
+
+.checkbox-picker-medium .checkbox-picker-title {
+  font-size: 1rem;
+}
+
+.checkbox-picker-medium .checkbox-picker-box {
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+.checkbox-picker-medium .checkbox-picker-grid {
+  gap: 0.5rem;
+}
+
+.checkbox-picker-large .checkbox-picker-title {
+  font-size: 1.25rem;
+}
+
+.checkbox-picker-large .checkbox-picker-box {
+  font-size: 1.25rem;
+  padding: 1rem;
+}
+
+.checkbox-picker-large .checkbox-picker-grid {
+  gap: 0.75rem;
+}
