@@ -10,7 +10,7 @@ This is just context, the actual data is placed by other components.
 |   +-- cell_depths.json
 |   +-- minimums.json
 |   +-- timestamps.json
-|   +-- {cell_id}_timelines.parquet.gz
+|   +-- {cell_id}_occupancy.parquet.gz
 ```
 
 Given the `FishFlowData` parameter passed to the API this data will be stored in the `depth/` directory at that location. `FishFlowData` can refer either to an S3 bucket directory or a local directory. As such there is nothing to actually build here.
@@ -50,7 +50,7 @@ Geojson of polygons with a `cell_id(int)` for each polygon.
 
 An ordered array of all the timestamps in the report.
 
-## `TimelinesSchema`
+## OccupancySchema`
 
 For a specific a `cell_id(int)` timelines for each model and depth bin. Models follow the same order as `support` (from `MetaDataSchema`) and depth bins follow the same order as `depth_bins` (also from `MetaDataSchema`). The rows of the parquet file follow the same order as the `timestamps.json`. For the columns we have `model_idx=col // num_depth_bins` and `depth_bin_idx=col % num_depth_bins`. The values are floats representing the likelihood of occupying that depth bin given the model in question. If the depth bin exceeds the maximum specified in `cell_depths.json` for this `cell_id(int)` then the column will be null. 
 
