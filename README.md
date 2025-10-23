@@ -40,12 +40,12 @@ Designs get overwhelming fast. Even simple web apps have many pieces to build an
 
 ### Why These Matter
 
-**User Cases** ensure you understand what you're building. Without them, you can't build well or avoid breaking things.
+**Use Cases** ensure you understand what you're building. Without them, you can't build well or avoid breaking things.
 
 **Interfaces** define how components fit into the ecosystem—they're the face of an otherwise black box.
 
 **Constraints** specify what must work for the component to function.
 
-**Architecture** defines how the component breaks down into sub-components, how to call those sub-components' interfaces in this specific context (with concrete parameters), and how data/control flows between them—a mini architecture. Forces you to break larger components into smaller, reusable pieces.
+**Build** defines how the component breaks down into sub-components, how to call those sub-components' interfaces in this specific context (with concrete parameters), and how data/control flows between them—a mini architecture. Forces you to break larger components into smaller, reusable pieces.
 
 Together, these define *what* the component does, how it interfaces with others, and what constraints apply—but not *how* it works internally. That's left as a black box for implementation... except for the build. So why specify the build? Because forcing breakdown into smaller components drives precision and reuse, preventing components from becoming code-spaghetti monoliths.
