@@ -25,8 +25,10 @@ Note as a result of the above folder structure there is one subdirectory for eac
 - model: str
 - reference model: str
 - region: str
+- reference_region: str
 - description: str
 - time_window: \[datetime, datetime]
+- reference_time_window: \[datetime, datetime]
 - grid_size: int
 - depth_bins: \[float, float, ..., float]
 - resolution: int
@@ -42,7 +44,7 @@ Geojson of polygons with a `cell_id(int)` for each polygon.
 
 ## `MinimumsSchema`
 
-`{cell_id(int) -> {month(int) -> minimums_array}}`
+`{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}`
 
 `minimums_array` is the minimum depth occupancy in that cell and month per hour `0-23`.
 
