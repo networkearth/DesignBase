@@ -129,7 +129,7 @@ Given there's going to be a _ton_ of data here we want to build mixtures one cel
 build_minimums(mixture_df, minimums={}) --> minimums
 ```
 
-- **@input** `mixture_df` - `cell_id`, `depth_bin`, `datetime`, `probability`
+- **@input** `mixture_df` - `cell_id`, `depth_bin`, `datetime`, `probability`, `epsilon`
 - **@input** `minimums` - `minimums` to add to
 - **@returns** an updated `minimums`
 ### Use Cases
@@ -137,7 +137,7 @@ build_minimums(mixture_df, minimums={}) --> minimums
 Creates a minimums map as documented in `../../Backend/API/Depth/Data.md:MinimumsSchema`
 ### Build
 
-We need to break the timestamp into a month of the year (0-12) and hour of the day (0-23). Then we bin by `cell_id`, `depth_bin`, month of the year, hour of the day, and take the minimum over `probability` per bin. 
+We need to break the timestamp into a month of the year (0-12) and hour of the day (0-23). Second we need to filter to `epsilon=1` (the non-reference model). Then we bin by `cell_id`, `depth_bin`, month of the year, hour of the day, and take the minimum over `probability` per bin. 
 #### Placement
 
 ```bash

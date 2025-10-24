@@ -48,7 +48,7 @@ Disk replaces S3 in this scenario. Local development is toggled by setting the e
 - `Infra/`
 - `Depth/`
 - `main`
-- `register_endpoints`
+- `register_endpoints_spec`
 
 #### Placement
 
@@ -58,7 +58,7 @@ This is just context on how all the pieces fit together.
 
 ## `main`
 
-## Interfaces
+### Interfaces
 
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
