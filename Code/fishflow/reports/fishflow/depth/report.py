@@ -18,9 +18,11 @@ from ..common.spacetime import build_geojson_h3, build_timeline
 
 def validate_metadata(meta_data: Dict[str, Any]) -> None:
     """
-    Validate that all required metadata fields are present.
+    Validate that all required user-provided metadata fields are present.
 
-    Validates against the MetaDataSchema defined in Design/FishFlow/Backend/API/Depth/Data.md.
+    Only validates fields that should be provided by the user. Other fields
+    (resolution, reference_time_window, grid_size, depth_bins, support, time_window)
+    are derived from the data.
 
     Args:
         meta_data: Metadata dictionary to validate.
@@ -36,13 +38,7 @@ def validate_metadata(meta_data: Dict[str, Any]) -> None:
         'reference_model',
         'region',
         'reference_region',
-        'description',
-        'time_window',
-        'reference_time_window',
-        'grid_size',
-        'depth_bins',
-        'resolution',
-        'support'
+        'description'
     ]
 
     missing_fields = [field for field in required_fields if field not in meta_data]
@@ -50,7 +46,7 @@ def validate_metadata(meta_data: Dict[str, Any]) -> None:
     if missing_fields:
         raise ValueError(
             f"meta_data is missing required fields: {', '.join(missing_fields)}. "
-            f"All fields from MetaDataSchema must be present."
+            f"Required fields are: {', '.join(required_fields)}."
         )
 
 
@@ -243,7 +239,11 @@ def build_report(
     - {cell_id}_occupancy.parquet.gz (one per cell)
 
     Args:
-        meta_data: Metadata dictionary for this scenario (must include 'scenario_id').
+        meta_data: Metadata dictionary for this scenario. Required fields: 'scenario_id',
+            'name', 'species', 'model', 'reference_model', 'region', 'reference_region',
+            'description'. The following fields are automatically derived: 'resolution',
+            'grid_size', 'depth_bins', 'support', 'time_window'. The 'reference_time_window'
+            field can be optionally provided; if not provided, it will be set to None.
         model_df: DataFrame with '_decision', '_choice', 'probability' for the target model.
         reference_model_df: DataFrame with '_decision', '_choice', 'probability' for
             the reference model.
@@ -261,10 +261,14 @@ def build_report(
     Raises:
         ValueError: If inputs are invalid or have mismatched decision/choice pairs.
     """
-    # Validate metadata against MetaDataSchema
+    # Validate user-provided metadata fields
     validate_metadata(meta_data)
 
     scenario_id = meta_data['scenario_id']
+
+    # Derive metadata fields from data before validation
+    # Note: We'll add these after computing them below, but create a copy to modify
+    meta_data = meta_data.copy()
 
     # Data validation: model_df and reference_model_df should have same decision/choice pairs
     model_pairs = set(zip(model_df['_decision'], model_df['_choice']))
@@ -304,17 +308,46 @@ def build_report(
 
     print(f"Building report for scenario {scenario_id}...")
 
-    # 1. Write meta_data.json
+    # Derive metadata fields from data
+    # 1. resolution: H3 resolution from h3_index
+    import h3
+    first_h3_index = context_df['h3_index'].iloc[0]
+    meta_data['resolution'] = h3.h3_get_resolution(first_h3_index)
+
+    # 2. depth_bins: unique depth bins from context_df
+    unique_depth_bins = sorted(context_df['depth_bin'].unique())
+    meta_data['depth_bins'] = [float(db) for db in unique_depth_bins]
+
+    # 3. time_window: min and max datetime from context_df (which has model_df data)
+    min_datetime = context_df['datetime'].min()
+    max_datetime = context_df['datetime'].max()
+    meta_data['time_window'] = [
+        min_datetime.isoformat() if hasattr(min_datetime, 'isoformat') else str(min_datetime),
+        max_datetime.isoformat() if hasattr(max_datetime, 'isoformat') else str(max_datetime)
+    ]
+
+    # Note: reference_time_window cannot be derived from model_actuals_df as it only contains
+    # _decision, _choice, and probability (no datetime info). If the user needs this field,
+    # they should provide it in meta_data. Otherwise, we'll set it to None.
+    # grid_size and support will be added below after computation
+
+    # Set reference_time_window if not provided (cannot be derived from current data)
+    if 'reference_time_window' not in meta_data:
+        meta_data['reference_time_window'] = None
+
+    # 1. Write meta_data.json (will be updated later with remaining derived fields)
     meta_data_path = os.path.join(scenario_dir, 'meta_data.json')
-    with open(meta_data_path, 'w') as f:
-        json.dump(meta_data, f, indent=2)
-    print(f"  ✓ Wrote meta_data.json")
+    # We'll write this at the end after all derived fields are computed
 
     # 2. Build and write geometries.geojson
     geojson, cell_id_df = build_geojson_h3(context_df)
     geojson_path = os.path.join(scenario_dir, 'geometries.geojson')
     with open(geojson_path, 'w') as f:
         json.dump(geojson, f, indent=2)
+
+    # Derive grid_size from geojson
+    meta_data['grid_size'] = len(geojson['features'])
+
     print(f"  ✓ Wrote geometries.geojson ({len(geojson['features'])} cells)")
 
     # 3. Merge cell_id into context_df
@@ -349,6 +382,10 @@ def build_report(
     support_path = os.path.join(scenario_dir, 'support.json')
     with open(support_path, 'w') as f:
         json.dump(support.tolist(), f, indent=2)
+
+    # Derive support for metadata
+    meta_data['support'] = support.tolist()
+
     print(f"  ✓ Computed and wrote support.json")
 
     # 7. Get unique cell_ids
@@ -412,5 +449,10 @@ def build_report(
     with open(minimums_path, 'w') as f:
         json.dump(minimums, f, indent=2)
     print(f"  ✓ Wrote minimums.json")
+
+    # 11. Write meta_data.json (now that all derived fields are computed)
+    with open(meta_data_path, 'w') as f:
+        json.dump(meta_data, f, indent=2)
+    print(f"  ✓ Wrote meta_data.json")
 
     print(f"\n✓ Report build complete! Output in {scenario_dir}")

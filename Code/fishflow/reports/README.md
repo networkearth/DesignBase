@@ -66,13 +66,7 @@ meta_data = {
     'reference_model': 'baseline_model_v1',
     'region': 'pacific_northwest',
     'reference_region': 'pacific_northwest',
-    'description': 'Fish depth analysis',
-    'time_window': ['2023-01-01T00:00:00', '2023-01-31T23:59:59'],
-    'reference_time_window': ['2022-01-01T00:00:00', '2022-01-31T23:59:59'],
-    'grid_size': 100,
-    'depth_bins': [0.0, 10.0, 20.0, 30.0, 40.0],
-    'resolution': 7,
-    'support': [0.05, 0.10, 0.15, 0.20, 0.15, 0.10, 0.08, 0.07, 0.05, 0.03, 0.02]
+    'description': 'Fish depth analysis'
 }
 
 # Model predictions (target model)
@@ -166,7 +160,7 @@ The `build_report` function creates the following directory structure:
 Build a complete depth occupancy report.
 
 **Parameters:**
-- `meta_data` (dict): Metadata including 'scenario_id'
+- `meta_data` (dict): Metadata including required fields: 'scenario_id', 'name', 'species', 'model', 'reference_model', 'region', 'reference_region', 'description'. The following fields are automatically derived from the data: 'resolution', 'grid_size', 'depth_bins', 'support', 'time_window'.
 - `model_df` (DataFrame): Target model predictions with columns `_decision`, `_choice`, `probability`
 - `reference_model_df` (DataFrame): Reference model predictions
 - `context_df` (DataFrame): Context with `_decision`, `_choice`, `datetime`, `h3_index`, `depth_bin`

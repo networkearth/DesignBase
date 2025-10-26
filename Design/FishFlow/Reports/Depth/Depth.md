@@ -137,7 +137,26 @@ Separately, `model_actuals_df` and `reference_model_actuals_df` should have the 
 
 #### Checks
 
-We need to ensure that we check all the meta_data components from `../../Backend/API/Depth/Data.md:MetaDataSchema` are actually in the meta data passed to this function. (And include it in the example from the README.md)
+We need to ensure that we check that the following are in the meta_data passed to the function:
+
+- scenario_id: str
+- name: str
+- species: str
+- model: str
+- reference model: str
+- region: str
+- reference_region: str
+- description: str
+
+These (and only these) should be provided in the example in the README.md
+
+The following should be derived from the data provided
+- resolution: int (h3 resolution)
+- reference_time_window: \[datetime, datetime] (form `model_actuals_df`)
+- grid_size: int (number of h3 cells in the geojson)
+- depth_bins: \[float, float, ..., float] (derived from the context)
+- support: \[float, float, ..., float] (derived from `compute_support`)
+- time_window: \[datetime, datetime] (from `model_df`)
 
 ## `build_minimums`
 
