@@ -60,7 +60,19 @@ from fishflow.depth.report import build_report
 # Prepare your data
 meta_data = {
     'scenario_id': 'my_scenario_001',
-    'description': 'Fish depth analysis'
+    'name': 'Example Depth Analysis',
+    'species': 'Tuna',
+    'model': 'target_model_v1',
+    'reference_model': 'baseline_model_v1',
+    'region': 'pacific_northwest',
+    'reference_region': 'pacific_northwest',
+    'description': 'Fish depth analysis',
+    'time_window': ['2023-01-01T00:00:00', '2023-01-31T23:59:59'],
+    'reference_time_window': ['2022-01-01T00:00:00', '2022-01-31T23:59:59'],
+    'grid_size': 100,
+    'depth_bins': [0.0, 10.0, 20.0, 30.0, 40.0],
+    'resolution': 7,
+    'support': [0.05, 0.10, 0.15, 0.20, 0.15, 0.10, 0.08, 0.07, 0.05, 0.03, 0.02]
 }
 
 # Model predictions (target model)

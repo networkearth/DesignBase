@@ -16,6 +16,44 @@ from ..common.support import compute_support, compute_mixtures
 from ..common.spacetime import build_geojson_h3, build_timeline
 
 
+def validate_metadata(meta_data: Dict[str, Any]) -> None:
+    """
+    Validate that all required metadata fields are present.
+
+    Validates against the MetaDataSchema defined in Design/FishFlow/Backend/API/Depth/Data.md.
+
+    Args:
+        meta_data: Metadata dictionary to validate.
+
+    Raises:
+        ValueError: If any required fields are missing.
+    """
+    required_fields = [
+        'scenario_id',
+        'name',
+        'species',
+        'model',
+        'reference_model',
+        'region',
+        'reference_region',
+        'description',
+        'time_window',
+        'reference_time_window',
+        'grid_size',
+        'depth_bins',
+        'resolution',
+        'support'
+    ]
+
+    missing_fields = [field for field in required_fields if field not in meta_data]
+
+    if missing_fields:
+        raise ValueError(
+            f"meta_data is missing required fields: {', '.join(missing_fields)}. "
+            f"All fields from MetaDataSchema must be present."
+        )
+
+
 def build_cell_depths(context_df: pd.DataFrame) -> Dict[int, int]:
     """
     Get the deepest depth bin per cell_id.
@@ -223,9 +261,8 @@ def build_report(
     Raises:
         ValueError: If inputs are invalid or have mismatched decision/choice pairs.
     """
-    # Validate that scenario_id is in meta_data
-    if 'scenario_id' not in meta_data:
-        raise ValueError("meta_data must contain 'scenario_id'")
+    # Validate metadata against MetaDataSchema
+    validate_metadata(meta_data)
 
     scenario_id = meta_data['scenario_id']
 

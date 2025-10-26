@@ -135,6 +135,10 @@ We should end up with as many occupancy parquet files as there are `cell_id`'s
 
 Separately, `model_actuals_df` and `reference_model_actuals_df` should have the same `_decision` and `_choice` pairs and `selections_actuals_df` should have the same set of `_decision` values with each `_choice` being matched to a choice in `model_actuals_df` (however not all choices will be present as this is the actual selected choices, not all choices available per decision)
 
+#### Checks
+
+We need to ensure that we check all the meta_data components from `../../Backend/API/Depth/Data.md:MetaDataSchema` are actually in the meta data passed to this function. (And include it in the example from the README.md)
+
 ## `build_minimums`
 
 ### Interfaces
