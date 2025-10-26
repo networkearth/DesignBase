@@ -154,14 +154,15 @@ class TestBuildMinimums:
 
         minimums = build_minimums(mixture_df)
 
-        # Should have structure: cell_id -> depth_bin -> month -> hour -> min_prob
+        # Should have structure: cell_id -> depth_bin -> month -> minimums_array
         assert 0 in minimums
         assert 0 in minimums[0]
         assert 1 in minimums[0]
         assert 0 in minimums[0][0]  # Month 0
-        assert 10 in minimums[0][0][0]  # Hour 10
+        assert isinstance(minimums[0][0][0], list)  # Should be an array
+        assert len(minimums[0][0][0]) == 24  # 24 hours
 
-        # Check minimum values
+        # Check minimum values at specific hours
         assert minimums[0][0][0][10] == 0.4  # Min of 0.6 and 0.4
         assert minimums[0][1][0][11] == 0.5  # Min of 0.7 and 0.5
 
@@ -178,16 +179,19 @@ class TestBuildMinimums:
         minimums = build_minimums(mixture_df)
 
         # Should use epsilon=1 value (0.9), not epsilon=0 value (0.1)
+        # Month 0 should be an array, access hour 10
+        assert isinstance(minimums[0][0][0], list)
         assert minimums[0][0][0][10] == 0.9
 
     def test_updates_existing_minimums(self):
         """Should update existing minimums dictionary."""
+        # Create existing structure with array format
+        existing_array = [float('inf')] * 24
+        existing_array[10] = 0.5
         existing = {
             0: {
                 0: {
-                    0: {
-                        10: 0.5
-                    }
+                    0: existing_array
                 }
             }
         }
@@ -205,6 +209,7 @@ class TestBuildMinimums:
         # Should keep existing data
         assert minimums[0][0][0][10] == 0.5
         # Should add new data
+        assert isinstance(minimums[1][0][1], list)
         assert minimums[1][0][1][14] == 0.8
 
     def test_month_zero_indexed(self):
@@ -220,6 +225,7 @@ class TestBuildMinimums:
         minimums = build_minimums(mixture_df)
 
         assert 0 in minimums[0][0]  # January should be 0
+        assert isinstance(minimums[0][0][0], list)  # Should be an array
         assert 1 not in minimums[0][0]  # Should not have month 1
 
 

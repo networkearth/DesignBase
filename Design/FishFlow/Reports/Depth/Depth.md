@@ -168,6 +168,14 @@ fishflow
 
 ### Constraints
 
+Note that `minimums` should be of the form:
+
+```python
+{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}
+```
+
+where `minimums_array` is indeed an array representing the minimums per hour (from 0 - 23). 
+
 ## `build_occupancy`
 
 ### Interfaces

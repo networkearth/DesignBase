@@ -119,9 +119,7 @@ def build_minimums(mixture_df: pd.DataFrame, minimums: Dict = None) -> Dict:
     {
         cell_id: {
             depth_bin: {
-                month: {
-                    hour: minimum_probability
-                }
+                month: minimums_array  # Array of 24 elements (hours 0-23)
             }
         }
     }
@@ -133,7 +131,8 @@ def build_minimums(mixture_df: pd.DataFrame, minimums: Dict = None) -> Dict:
             creates a new one.
 
     Returns:
-        Updated minimums dictionary.
+        Updated minimums dictionary where minimums_array is an array of length 24
+        representing the minimums per hour (from 0-23).
 
     Raises:
         ValueError: If required columns are missing.
@@ -162,7 +161,7 @@ def build_minimums(mixture_df: pd.DataFrame, minimums: Dict = None) -> Dict:
     # Group by cell_id, depth_bin, month, hour and take minimum probability
     grouped = filtered.groupby(['cell_id', 'depth_bin', 'month', 'hour'])['probability'].min()
 
-    # Build the nested dictionary structure
+    # Build the nested dictionary structure with arrays for hours
     for (cell_id, depth_bin, month, hour), min_prob in grouped.items():
         cell_id = int(cell_id)
         depth_bin = int(depth_bin)
@@ -174,8 +173,10 @@ def build_minimums(mixture_df: pd.DataFrame, minimums: Dict = None) -> Dict:
         if depth_bin not in minimums[cell_id]:
             minimums[cell_id][depth_bin] = {}
         if month not in minimums[cell_id][depth_bin]:
-            minimums[cell_id][depth_bin][month] = {}
+            # Initialize array of 24 hours with None or infinity
+            minimums[cell_id][depth_bin][month] = [float('inf')] * 24
 
+        # Update the specific hour in the array
         minimums[cell_id][depth_bin][month][hour] = float(min_prob)
 
     return minimums
