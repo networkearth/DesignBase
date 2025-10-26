@@ -62,4 +62,4 @@ fishflow
 ```
 ### Constraints
 
-N/A
+Use `h3.cell_to_boundary`

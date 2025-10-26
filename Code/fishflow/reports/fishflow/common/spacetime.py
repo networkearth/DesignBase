@@ -49,8 +49,8 @@ def build_geojson_h3(context_df: pd.DataFrame) -> Tuple[Dict[str, Any], pd.DataF
         cell_id = h3_to_cell_id[h3_idx]
 
         # Get the boundary coordinates for the H3 hexagon
-        # h3.h3_to_geo_boundary returns list of (lat, lon) tuples
-        boundary = h3.h3_to_geo_boundary(h3_idx, geo_json=True)
+        # h3.cell_to_boundary returns list of (lat, lon) tuples
+        boundary = h3.cell_to_boundary(h3_idx, geo_json=True)
 
         # Create polygon geometry (GeoJSON uses [lon, lat] order)
         polygon = geojson.Polygon([boundary])
