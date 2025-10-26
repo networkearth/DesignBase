@@ -158,6 +158,10 @@ The following should be derived from the data provided
 - support: \[float, float, ..., float] (derived from `compute_support`)
 - time_window: \[datetime, datetime] (from `context_df`)
 
+#### Notes
+
+the function to use to get the `h3` resolution is `get_resolution` not `h3_get_resolution`.
+
 ## `build_minimums`
 
 ### Interfaces
