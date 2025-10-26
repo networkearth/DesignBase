@@ -31,15 +31,15 @@ def validate_metadata(meta_data: Dict[str, Any]) -> None:
         ValueError: If any required fields are missing.
     """
     required_fields = [
-        'scenario_id',
-        'name',
-        'species',
-        'model',
-        'reference_model',
-        'region',
-        'reference_region',
-        'description',
-        'reference_time_window'
+        "scenario_id",
+        "name",
+        "species",
+        "model",
+        "reference_model",
+        "region",
+        "reference_region",
+        "description",
+        "reference_time_window",
     ]
 
     missing_fields = [field for field in required_fields if field not in meta_data]
@@ -65,12 +65,12 @@ def build_cell_depths(context_df: pd.DataFrame) -> Dict[int, int]:
         ValueError: If required columns are missing.
     """
     # Validate required columns
-    required_cols = {'cell_id', 'depth_bin'}
+    required_cols = {"cell_id", "depth_bin"}
     if not required_cols.issubset(context_df.columns):
         raise ValueError(f"context_df must have columns: {required_cols}")
 
     # Group by cell_id and find max depth_bin
-    cell_depths = context_df.groupby('cell_id')['depth_bin'].max().to_dict()
+    cell_depths = context_df.groupby("cell_id")["depth_bin"].max().to_dict()
 
     # Convert keys and values to int for JSON serialization
     cell_depths = {int(k): int(v) for k, v in cell_depths.items()}
@@ -101,7 +101,7 @@ def build_occupancy(mixture_df: pd.DataFrame) -> pd.DataFrame:
         ValueError: If required columns are missing.
     """
     # Validate required columns
-    required_cols = {'depth_bin', 'datetime', 'probability', 'epsilon'}
+    required_cols = {"depth_bin", "datetime", "probability", "epsilon"}
     if not required_cols.issubset(mixture_df.columns):
         raise ValueError(f"mixture_df must have columns: {required_cols}")
 
@@ -109,9 +109,9 @@ def build_occupancy(mixture_df: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("mixture_df must not be empty")
 
     # Get sorted unique values
-    unique_datetimes = sorted(mixture_df['datetime'].unique())
-    unique_depth_bins = sorted(mixture_df['depth_bin'].unique())
-    unique_epsilons = sorted(mixture_df['epsilon'].unique())
+    unique_datetimes = sorted(mixture_df["datetime"].unique())
+    unique_depth_bins = sorted(mixture_df["depth_bin"].unique())
+    unique_epsilons = sorted(mixture_df["epsilon"].unique())
 
     num_depth_bins = len(unique_depth_bins)
     num_models = len(unique_epsilons)
@@ -128,20 +128,17 @@ def build_occupancy(mixture_df: pd.DataFrame) -> pd.DataFrame:
 
     # Fill the matrix
     for _, row in mixture_df.iterrows():
-        row_idx = datetime_to_row[row['datetime']]
-        depth_bin_idx = depth_bin_to_idx[row['depth_bin']]
-        model_idx = epsilon_to_model_idx[row['epsilon']]
+        row_idx = datetime_to_row[row["datetime"]]
+        depth_bin_idx = depth_bin_to_idx[row["depth_bin"]]
+        model_idx = epsilon_to_model_idx[row["epsilon"]]
 
         # Column calculation: model_idx * num_depth_bins + depth_bin_idx
         col_idx = model_idx * num_depth_bins + depth_bin_idx
 
-        occupancy_matrix[row_idx, col_idx] = row['probability']
+        occupancy_matrix[row_idx, col_idx] = row["probability"]
 
     # Create dataframe with datetime index
-    occupancy_df = pd.DataFrame(
-        occupancy_matrix,
-        index=unique_datetimes
-    )
+    occupancy_df = pd.DataFrame(occupancy_matrix, index=unique_datetimes)
 
     return occupancy_df
 
@@ -173,7 +170,7 @@ def build_minimums(mixture_df: pd.DataFrame, minimums: Dict = None) -> Dict:
         ValueError: If required columns are missing.
     """
     # Validate required columns
-    required_cols = {'cell_id', 'depth_bin', 'datetime', 'probability', 'epsilon'}
+    required_cols = {"cell_id", "depth_bin", "datetime", "probability", "epsilon"}
     if not required_cols.issubset(mixture_df.columns):
         raise ValueError(f"mixture_df must have columns: {required_cols}")
 
@@ -181,20 +178,22 @@ def build_minimums(mixture_df: pd.DataFrame, minimums: Dict = None) -> Dict:
         minimums = {}
 
     # Filter to epsilon = 1 (non-reference model)
-    filtered = mixture_df[mixture_df['epsilon'] == 1.0].copy()
+    filtered = mixture_df[mixture_df["epsilon"] == 1.0].copy()
 
     if len(filtered) == 0:
         return minimums
 
     # Convert datetime to pandas datetime if not already
-    filtered['datetime'] = pd.to_datetime(filtered['datetime'])
+    filtered["datetime"] = pd.to_datetime(filtered["datetime"])
 
     # Extract month (0-11) and hour (0-23)
-    filtered['month'] = filtered['datetime'].dt.month - 1  # Convert 1-12 to 0-11
-    filtered['hour'] = filtered['datetime'].dt.hour
+    filtered["month"] = filtered["datetime"].dt.month - 1  # Convert 1-12 to 0-11
+    filtered["hour"] = filtered["datetime"].dt.hour
 
     # Group by cell_id, depth_bin, month, hour and take minimum probability
-    grouped = filtered.groupby(['cell_id', 'depth_bin', 'month', 'hour'])['probability'].min()
+    grouped = filtered.groupby(["cell_id", "depth_bin", "month", "hour"])[
+        "probability"
+    ].min()
 
     # Build the nested dictionary structure with arrays for hours
     for (cell_id, depth_bin, month, hour), min_prob in grouped.items():
@@ -209,7 +208,7 @@ def build_minimums(mixture_df: pd.DataFrame, minimums: Dict = None) -> Dict:
             minimums[cell_id][depth_bin] = {}
         if month not in minimums[cell_id][depth_bin]:
             # Initialize array of 24 hours with None or infinity
-            minimums[cell_id][depth_bin][month] = [float('inf')] * 24
+            minimums[cell_id][depth_bin][month] = [float("inf")] * 24
 
         # Update the specific hour in the array
         minimums[cell_id][depth_bin][month][hour] = float(min_prob)
@@ -226,7 +225,7 @@ def build_report(
     reference_model_actuals_df: pd.DataFrame,
     selections_actuals_df: pd.DataFrame,
     epsilons: np.ndarray,
-    data_dir: str
+    data_dir: str,
 ) -> None:
     """
     Build a complete depth occupancy report.
@@ -264,15 +263,15 @@ def build_report(
     # Validate user-provided metadata fields
     validate_metadata(meta_data)
 
-    scenario_id = meta_data['scenario_id']
+    scenario_id = meta_data["scenario_id"]
 
     # Derive metadata fields from data before validation
     # Note: We'll add these after computing them below, but create a copy to modify
     meta_data = meta_data.copy()
 
     # Data validation: model_df and reference_model_df should have same decision/choice pairs
-    model_pairs = set(zip(model_df['_decision'], model_df['_choice']))
-    ref_pairs = set(zip(reference_model_df['_decision'], reference_model_df['_choice']))
+    model_pairs = set(zip(model_df["_decision"], model_df["_choice"]))
+    ref_pairs = set(zip(reference_model_df["_decision"], reference_model_df["_choice"]))
 
     if model_pairs != ref_pairs:
         raise ValueError(
@@ -280,8 +279,15 @@ def build_report(
         )
 
     # Validate actuals dataframes
-    model_actuals_pairs = set(zip(model_actuals_df['_decision'], model_actuals_df['_choice']))
-    ref_actuals_pairs = set(zip(reference_model_actuals_df['_decision'], reference_model_actuals_df['_choice']))
+    model_actuals_pairs = set(
+        zip(model_actuals_df["_decision"], model_actuals_df["_choice"])
+    )
+    ref_actuals_pairs = set(
+        zip(
+            reference_model_actuals_df["_decision"],
+            reference_model_actuals_df["_choice"],
+        )
+    )
 
     if model_actuals_pairs != ref_actuals_pairs:
         raise ValueError(
@@ -290,8 +296,8 @@ def build_report(
         )
 
     # Check that selections_actuals_df decisions match model_actuals_df decisions
-    selections_decisions = set(selections_actuals_df['_decision'])
-    actuals_decisions = set(model_actuals_df['_decision'])
+    selections_decisions = set(selections_actuals_df["_decision"])
+    actuals_decisions = set(model_actuals_df["_decision"])
 
     if not selections_decisions.issubset(actuals_decisions):
         raise ValueError(
@@ -311,78 +317,81 @@ def build_report(
     # Derive metadata fields from data
     # 1. resolution: H3 resolution from h3_index
     import h3
-    first_h3_index = context_df['h3_index'].iloc[0]
-    meta_data['resolution'] = h3.h3_get_resolution(first_h3_index)
+
+    first_h3_index = context_df["h3_index"].iloc[0]
+    meta_data["resolution"] = h3.get_resolution(first_h3_index)
 
     # 2. depth_bins: unique depth bins from context_df
-    unique_depth_bins = sorted(context_df['depth_bin'].unique())
-    meta_data['depth_bins'] = [float(db) for db in unique_depth_bins]
+    unique_depth_bins = sorted(context_df["depth_bin"].unique())
+    meta_data["depth_bins"] = [float(db) for db in unique_depth_bins]
 
     # 3. time_window: min and max datetime from context_df
-    min_datetime = context_df['datetime'].min()
-    max_datetime = context_df['datetime'].max()
-    meta_data['time_window'] = [
-        min_datetime.isoformat() if hasattr(min_datetime, 'isoformat') else str(min_datetime),
-        max_datetime.isoformat() if hasattr(max_datetime, 'isoformat') else str(max_datetime)
+    min_datetime = context_df["datetime"].min()
+    max_datetime = context_df["datetime"].max()
+    meta_data["time_window"] = [
+        (
+            min_datetime.isoformat()
+            if hasattr(min_datetime, "isoformat")
+            else str(min_datetime)
+        ),
+        (
+            max_datetime.isoformat()
+            if hasattr(max_datetime, "isoformat")
+            else str(max_datetime)
+        ),
     ]
 
     # Note: grid_size and support will be added below after computation
 
     # 1. Write meta_data.json (will be updated later with remaining derived fields)
-    meta_data_path = os.path.join(scenario_dir, 'meta_data.json')
+    meta_data_path = os.path.join(scenario_dir, "meta_data.json")
     # We'll write this at the end after all derived fields are computed
 
     # 2. Build and write geometries.geojson
     geojson, cell_id_df = build_geojson_h3(context_df)
-    geojson_path = os.path.join(scenario_dir, 'geometries.geojson')
-    with open(geojson_path, 'w') as f:
+    geojson_path = os.path.join(scenario_dir, "geometries.geojson")
+    with open(geojson_path, "w") as f:
         json.dump(geojson, f, indent=2)
 
     # Derive grid_size from geojson
-    meta_data['grid_size'] = len(geojson['features'])
+    meta_data["grid_size"] = len(geojson["features"])
 
     print(f"  ✓ Wrote geometries.geojson ({len(geojson['features'])} cells)")
 
     # 3. Merge cell_id into context_df
     context_with_cells = pd.merge(
-        context_df,
-        cell_id_df,
-        on=['_decision', '_choice'],
-        how='left'
+        context_df, cell_id_df, on=["_decision", "_choice"], how="left"
     )
 
     # 4. Build and write cell_depths.json
     cell_depths = build_cell_depths(context_with_cells)
-    cell_depths_path = os.path.join(scenario_dir, 'cell_depths.json')
-    with open(cell_depths_path, 'w') as f:
+    cell_depths_path = os.path.join(scenario_dir, "cell_depths.json")
+    with open(cell_depths_path, "w") as f:
         json.dump(cell_depths, f, indent=2)
     print(f"  ✓ Wrote cell_depths.json")
 
     # 5. Build and write timestamps.json
     timeline = build_timeline(context_df)
-    timestamps_path = os.path.join(scenario_dir, 'timestamps.json')
-    with open(timestamps_path, 'w') as f:
+    timestamps_path = os.path.join(scenario_dir, "timestamps.json")
+    with open(timestamps_path, "w") as f:
         json.dump(timeline, f, indent=2)
     print(f"  ✓ Wrote timestamps.json ({len(timeline)} timestamps)")
 
     # 6. Compute support
     support = compute_support(
-        model_actuals_df,
-        reference_model_actuals_df,
-        selections_actuals_df,
-        epsilons
+        model_actuals_df, reference_model_actuals_df, selections_actuals_df, epsilons
     )
-    support_path = os.path.join(scenario_dir, 'support.json')
-    with open(support_path, 'w') as f:
+    support_path = os.path.join(scenario_dir, "support.json")
+    with open(support_path, "w") as f:
         json.dump(support.tolist(), f, indent=2)
 
     # Derive support for metadata
-    meta_data['support'] = support.tolist()
+    meta_data["support"] = support.tolist()
 
     print(f"  ✓ Computed and wrote support.json")
 
     # 7. Get unique cell_ids
-    unique_cell_ids = sorted(context_with_cells['cell_id'].unique())
+    unique_cell_ids = sorted(context_with_cells["cell_id"].unique())
 
     # 8. Initialize minimums
     minimums = {}
@@ -394,33 +403,28 @@ def build_report(
         # Filter model_df and reference_model_df for this cell
         # Need to merge with context to get cell_id
         model_with_context = pd.merge(
-            model_df,
-            context_with_cells,
-            on=['_decision', '_choice'],
-            how='inner'
+            model_df, context_with_cells, on=["_decision", "_choice"], how="inner"
         )
 
         reference_with_context = pd.merge(
             reference_model_df,
             context_with_cells,
-            on=['_decision', '_choice'],
-            how='inner'
+            on=["_decision", "_choice"],
+            how="inner",
         )
 
         # Filter to this cell
-        cell_model_df = model_with_context[model_with_context['cell_id'] == cell_id]
-        cell_reference_df = reference_with_context[reference_with_context['cell_id'] == cell_id]
+        cell_model_df = model_with_context[model_with_context["cell_id"] == cell_id]
+        cell_reference_df = reference_with_context[
+            reference_with_context["cell_id"] == cell_id
+        ]
 
         if len(cell_model_df) == 0:
             print(f"    Warning: No data for cell_id {cell_id}, skipping")
             continue
 
         # Compute mixtures for this cell
-        cell_mixtures = compute_mixtures(
-            cell_model_df,
-            cell_reference_df,
-            epsilons
-        )
+        cell_mixtures = compute_mixtures(cell_model_df, cell_reference_df, epsilons)
 
         # Build minimums for this cell
         minimums = build_minimums(cell_mixtures, minimums)
@@ -429,8 +433,8 @@ def build_report(
         occupancy_df = build_occupancy(cell_mixtures)
 
         # Write occupancy parquet file
-        occupancy_path = os.path.join(scenario_dir, f'{cell_id}_occupancy.parquet.gz')
-        occupancy_df.to_parquet(occupancy_path, compression='gzip')
+        occupancy_path = os.path.join(scenario_dir, f"{cell_id}_occupancy.parquet.gz")
+        occupancy_df.to_parquet(occupancy_path, compression="gzip")
 
         if (cell_id + 1) % 10 == 0:
             print(f"    Processed {cell_id + 1}/{len(unique_cell_ids)} cells")
@@ -438,13 +442,13 @@ def build_report(
     print(f"  ✓ Wrote {len(unique_cell_ids)} occupancy files")
 
     # 10. Write minimums.json
-    minimums_path = os.path.join(scenario_dir, 'minimums.json')
-    with open(minimums_path, 'w') as f:
+    minimums_path = os.path.join(scenario_dir, "minimums.json")
+    with open(minimums_path, "w") as f:
         json.dump(minimums, f, indent=2)
     print(f"  ✓ Wrote minimums.json")
 
     # 11. Write meta_data.json (now that all derived fields are computed)
-    with open(meta_data_path, 'w') as f:
+    with open(meta_data_path, "w") as f:
         json.dump(meta_data, f, indent=2)
     print(f"  ✓ Wrote meta_data.json")
 
