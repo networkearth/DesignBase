@@ -93,12 +93,14 @@ meta_data --> meta_data.json
 m --> bm2[build_minimums: cell_id]
 bm2 --> mins[minimums.json]
 ```
+Note that `depth_bins_df` is just the context df's `_decision`, `_choice`, and `depth_bin` columns. 
+
 #### Dependencies
 
 - `../Common/Support.md:compute_support`
 - `../Common/Support.md:compute_mixtures`
 - `../Common/Spacetime.md:build_geojson`
-- `../CommonSpacetime.md:build_timeline`
+- `../Common/Spacetime.md:build_timeline`
 - `build_minimums`
 - `build_occupancy`
 - `build_cell_depths`
@@ -119,7 +121,19 @@ fishflow
 
 ### Constraints
 
-Given there's going to be a _ton_ of data here we want to build mixtures one cell at a time. 
+Given there's going to be a _ton_ of data here we want to build mixtures one cell at a time. That is build each occupancy file one at a time in a loop. 
+
+#### File Writing
+
+This function should create a new directory for the `{scenario_id}`. If the directory already exists overwrite it. 
+
+We should end up with as many occupancy parquet files as there are `cell_id`'s
+
+#### Data Checks
+
+`model_df` and `reference_model_df` should have precisely the same `_decision`, `_choice` pairs. 
+
+Separately, `model_actuals_df` and `reference_model_actuals_df` should have the same `_decision` and `_choice` pairs and `selections_actuals_df` should have the same set of `_decision` values with each `_choice` being matched to a choice in `model_actuals_df` (however not all choices will be present as this is the actual selected choices, not all choices available per decision)
 
 ## `build_minimums`
 

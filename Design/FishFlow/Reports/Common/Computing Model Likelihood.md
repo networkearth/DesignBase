@@ -3,7 +3,18 @@ This function efficiently computes the likelihood of each model given some datas
 ##### Definitions:
 -  $N_D$: number of decisions in the dataset $D$. 
 - $N_C$: maximum number of choices across all decisions in $D$.
-#### Function `log_likelihood_member`: Log Likelihood for an $\epsilon$
+## `log_likelihood_member`: Log Likelihood for an $\epsilon$
+
+### Interfaces
+
+```python
+log_likelihood_member(
+	epsilon, reference_model_matrix, model_matrix, selections_matrix
+) --> log_likelihood
+```
+See below for more detail. 
+### Build
+
 ##### Inputs:
 - $\epsilon$: a number ranging between $0$ and $1$.
 - $G_{B}$:  an $N_D$ by $N_C$ matrix with the with the probabilities for each choice in each decision for the reference model. 
@@ -28,8 +39,39 @@ where the $\bullet$ indicates element wise multiplication. (We are only pulling 
 We can then get the log likelihood of the data given the guess $G_{\epsilon}$ as:
 
 $$\sum_i \log{P(D_i| \epsilon)}$$
-#### Function `prob_members`: Compute Likelihood of Members
+#### Placement
 
+```
+fishflow
+|
++-- reports
+|   |
+|   +-- fishflow
+|   |   |
+|   |   +-- common
+|   |   |   |
+|   |   |   +-- support.py <--
+```
+### Constraints
+
+`numpy` should be used for matrix operations.
+## Function `prob_members`: Compute Likelihood of Members
+
+### Interfaces
+
+```python
+prob_members(
+	reference_model_matrix,
+	model_matrix,
+	selections_matrix,
+	epsilons,
+	prior_probs=None
+) --> likelihoods
+```
+
+See below for further detail
+
+### Build
 ##### Inputs:
 - $G_{B}$:  an $N_D$ by $N_C$ matrix with the with the probabilities for each choice in each decision for the reference model. 
 - $G_{H}$: an $N_D$ by $N_C$ matrix with the with the probabilities for each choice in each decision for the non-reference model. 
@@ -57,3 +99,21 @@ but by using the logarithms it is numerically stable. This ratio is equal to the
 
 $$P(\epsilon_i|D)=\frac{r_i}{\sum_j r_j}$$
 and return our result!
+
+#### Placement
+
+```
+fishflow
+|
++-- reports
+|   |
+|   +-- fishflow
+|   |   |
+|   |   +-- common
+|   |   |   |
+|   |   |   +-- support.py <--
+```
+
+### Constraints
+
+`numpy` should be used for matrix operations.

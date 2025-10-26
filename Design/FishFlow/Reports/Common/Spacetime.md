@@ -8,7 +8,7 @@ build_geojson_h3(context_df) --> geojson, cell_id_df
 
 - **@input** `context_df` - having at least the columns `_decision`, `_choice` (keys) and `h3_index`
 - **@returns** `geojson` - a geojson of h3 polygons corresponding to each distinct `h3_index` and a `cell_id(int)` per polygon
-- **@returns** `cell_id_df` - a dataframe with the columns `_decision`, `_choice`, `cell_id` where the `cell_id` corresponds to the original `h3_index` for this decision and choice. 
+- **@returns** `cell_id_df` - a dataframe with the columns `_decision`, `_choice`, `cell_id` where the `cell_id` corresponds to the original `h3_index` for this decision and choice. `cell_id`'s should start at 0 and rise from there (integer type)
 ### Use Cases
 
 Builds a geojson from our context for each of the choices

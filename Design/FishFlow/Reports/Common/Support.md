@@ -141,7 +141,7 @@ Should apply the following logic takes the following steps:
 
 1. Join reference model with the model to get both probabilities in the same dataframe. 
 2. Cross join with the `epsilons` to get a copy of the dataframe for each $\epsilon$
-3. Compute the odds of each row as $G_B\epsilon+(1-\epsilon)G_H$ where $G_B$ corresponds to the probability of the reference guess and $G_H$ to the normal guess. 
+3. Compute the odds of each row as $G_H\epsilon+(1-\epsilon)G_B$ where $G_B$ corresponds to the probability of the reference guess and $G_H$ to the normal guess. 
 4. Get the sum of odds across all choices in a decision for each epsilon (group by `_choice`, `_decision`, `epsilon`) 
 5. Compute the probability for the specific mixture as odds/sum odds. 
 
