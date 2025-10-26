@@ -29,9 +29,7 @@ fishflow
 |
 +-- reports
 |   |
-|   +-- fishflow
-|   |   |
-|   |   +-- setup.py <--
+|   +-- setup.py <--
 ```
 
 ### Constraints
@@ -48,7 +46,7 @@ and running `pip install .`
 - Python >= 3.9
 - numpy >= 1.20.0
 - pandas >= 1.3.0
-- h3 >= 3.7.0 (or h3-py)
+- h3 >= 4.0.0 (or h3-py)
 - pyarrow >= 6.0.0 (for parquet support)
 - geojson >= 2.5.0
 ```
