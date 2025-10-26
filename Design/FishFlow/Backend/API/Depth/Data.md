@@ -23,12 +23,12 @@ Note as a result of the above folder structure there is one subdirectory for eac
 - name: str
 - species: str
 - model: str
-- reference model: str
+- reference_model: str
 - region: str
 - reference_region: str
 - description: str
-- time_window: \[datetime, datetime]
-- reference_time_window: \[datetime, datetime]
+- time_window: \[datetime, datetime] (format: "YYYY-MM-DD HH:MM:SS")
+- reference_time_window: \[datetime, datetime] (format: "YYYY-MM-DD HH:MM:SS")
 - grid_size: int
 - depth_bins: \[float, float, ..., float]
 - resolution: int
@@ -46,7 +46,7 @@ Geojson of polygons with a `cell_id(int)` for each polygon.
 
 `{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}`
 
-`minimums_array` is the minimum depth occupancy in that cell and month per hour `0-23`.
+`minimums_array` is the minimum depth occupancy in that cell and month per hour `0-23`. It is an array of length 24 containing floats.
 
 ## `TimestampsSchema`
 

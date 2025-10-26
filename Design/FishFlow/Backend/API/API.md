@@ -15,6 +15,8 @@ The API itself uses the `register_endpoint_spec` function for each `ENDPOINT_SPE
 There is a `FishFlowData` environment variable that points to the directory (or bucket and directory) where the data for the API is stored. 
 #### Deployment
 
+**Note: Infrastructure deployment is deferred for later implementation. The information below is for context only.**
+
 ```mermaid
 graph LR
 S3 --> task
@@ -61,7 +63,7 @@ This is just context on how all the pieces fit together.
 ### Interfaces
 
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 3000
 ```
 
 ### Use Cases
@@ -78,6 +80,8 @@ n1[Instantiate and Configure App] --> n2[Register Endpoints] --> n3[Register Hea
 Endpoints should be registered using the `register_endpoint_spec` function and the `ENDPOINT_SPEC` in:
 
 - `Depth/`
+
+The health check endpoint should be a simple GET endpoint at `/health` that returns a 200 status code with `{"status": "healthy"}` to indicate the API is running.
 
 #### Placement
 
@@ -119,14 +123,14 @@ register_endpoint_spec(app, endpoint_spec)
 
 Given a `endpoint_spec`
 
-```
+```python
 {
 	"/v1/endpoint1": (endpoint_1, response_model1),
 	"/v1/endpoint2/{param}": (endpoint_2, response_model2),
 }
 ```
 
-registers the endpoint functions and response models with a `FastAPI` `app`. 
+registers the endpoint functions and response models with a `FastAPI` `app` as GET endpoints. All endpoints should be registered as GET requests with a 200 status code on success. 
 
 ### Build
 

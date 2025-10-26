@@ -54,7 +54,9 @@ get_scenarios() --> Scenarios
 
 ### Use Cases
 
-Loops through the `/depth` directory and pulls the each scenario to return a `Scenarios` model. Besides reorganizing the data there is no data transformation here. 
+Loops through the `/depth` directory and pulls each scenario to return a `Scenarios` model. Besides reorganizing the data there is no data transformation here.
+
+Scenarios are identified by filtering for folders in the `/depth` directory.
 
 ### Build
 
@@ -80,6 +82,10 @@ fishflow
 ### Constraints
 
 Needs to be capable of reading either from local disk or from `s3` depending on whether `FishFlowData` points to an `s3` bucket or not. (`s3://` prefix)
+
+**Error Handling:**
+- Return 500 if unable to access the data directory or read files
+- Return 500 if data files are corrupted or malformed
 
 ## `Scenarios`
 
@@ -128,8 +134,6 @@ N/A
 get_scenario(scenario_id: str) --> Scenario
 ```
 
-Should throw typical exceptions for missing data.
-
 ### Use Cases
 
 Simple pass through of metadata for the `scenario_id` specified.
@@ -155,6 +159,11 @@ fishflow
 ### Constraints
 
 Needs to be capable of reading either from local disk or from `s3` depending on whether `FishFlowData` points to an `s3` bucket or not. (`s3://` prefix)
+
+**Error Handling:**
+- Return 404 if the scenario_id does not exist
+- Return 500 if unable to access the data directory or read files
+- Return 500 if data files are corrupted or malformed
 
 ## `Scenario`
 
@@ -200,8 +209,6 @@ N/A
 get_geometries(scenario_id: str) --> Geometries
 ```
 
-Should throw typical exceptions for missing data.
-
 ### Use Cases
 
 Simple pass through of geojson for the `scenario_id` specified.
@@ -227,6 +234,11 @@ fishflow
 ### Constraints
 
 Needs to be capable of reading either from local disk or from `s3` depending on whether `FishFlowData` points to an `s3` bucket or not. (`s3://` prefix)
+
+**Error Handling:**
+- Return 404 if the scenario_id does not exist
+- Return 500 if unable to access the data directory or read files
+- Return 500 if data files are corrupted or malformed
 
 ## `Geometries`
 
@@ -272,8 +284,6 @@ N/A
 get_cell_depths(scenario_id: str) --> CellDepths
 ```
 
-Should throw typical exceptions for missing data.
-
 ### Use Cases
 
 Simple pass through of cell_depths for the `scenario_id` specified.
@@ -299,6 +309,11 @@ fishflow
 ### Constraints
 
 Needs to be capable of reading either from local disk or from `s3` depending on whether `FishFlowData` points to an `s3` bucket or not. (`s3://` prefix)
+
+**Error Handling:**
+- Return 404 if the scenario_id does not exist
+- Return 500 if unable to access the data directory or read files
+- Return 500 if data files are corrupted or malformed
 
 ## `CellDepths`
 
@@ -344,8 +359,6 @@ N/A
 get_timestamps(scenario_id: str) --> Timestamps
 ```
 
-Should throw typical exceptions for missing data.
-
 ### Use Cases
 
 Simple pass through of timestamps for the `scenario_id` specified.
@@ -371,6 +384,11 @@ fishflow
 ### Constraints
 
 Needs to be capable of reading either from local disk or from `s3` depending on whether `FishFlowData` points to an `s3` bucket or not. (`s3://` prefix)
+
+**Error Handling:**
+- Return 404 if the scenario_id does not exist
+- Return 500 if unable to access the data directory or read files
+- Return 500 if data files are corrupted or malformed
 
 ## `Timestamps`
 
@@ -416,8 +434,6 @@ N/A
 get_minimums(scenario_id: str) --> Minimums
 ```
 
-Should throw typical exceptions for missing data.
-
 ### Use Cases
 
 Simple pass through of minimums for the `scenario_id` specified.
@@ -443,6 +459,11 @@ fishflow
 ### Constraints
 
 Needs to be capable of reading either from local disk or from `s3` depending on whether `FishFlowData` points to an `s3` bucket or not. (`s3://` prefix)
+
+**Error Handling:**
+- Return 404 if the scenario_id does not exist
+- Return 500 if unable to access the data directory or read files
+- Return 500 if data files are corrupted or malformed
 
 ## `Minimums`
 
@@ -485,12 +506,12 @@ N/A
 ### Interfaces
 
 ```python
-get_scenario(scenario_id: str, cell_id: int, depth_bin: float) --> Occupancy
+get_occupancy(scenario_id: str, cell_id: int, depth_bin: float) --> Occupancy
 ```
 
-`cell_id` and `depth_bin` both come from query parameters in the endpoint URL.
+`cell_id` (int, required) and `depth_bin` (float, required) both come from query parameters in the endpoint URL.
 
-Should throw typical exceptions for missing data.
+Example: `/v1/depth/scenario/{scenario_id}/occupancy?cell_id=123&depth_bin=10.5`
 
 ### Use Cases
 
@@ -498,7 +519,10 @@ Pulls the timelines (as an array) for the `cell_id` and `depth_bin` in question.
 
 `[model0_timeline, model1_timeline,..., modeln_timeline]`
 
-See `Data.md:OccupancySchema` for details on the data structure that we are pulling from for this endpoint. See `Data.md:Overall Organization` for how the files are broken up between cell ids. 
+See `Data.md:OccupancySchema` for details on the data structure that we are pulling from for this endpoint. See `Data.md:Overall Organization` for how the files are broken up between cell ids.
+
+To translate the `depth_bin` float parameter to a `depth_bin_idx`, find the index of the depth_bin in the `depth_bins` array from the metadata (see `Data.md:MetaDataSchema`).
+
 ### Build
 
 Depends on `Occupancy`
@@ -520,6 +544,14 @@ fishflow
 ### Constraints
 
 Needs to be capable of reading either from local disk or from `s3` depending on whether `FishFlowData` points to an `s3` bucket or not. (`s3://` prefix)
+
+**Error Handling:**
+- Return 404 if the scenario_id does not exist
+- Return 404 if the parquet file for the specified cell_id does not exist (indicating the cell_id is invalid)
+- Return 400 if cell_id or depth_bin query parameters are missing or invalid
+- Return 400 if the depth_bin is not found in the scenario's depth_bins array
+- Return 500 if unable to access the data directory or read files
+- Return 500 if data files (including parquet files) are corrupted or malformed
 
 ## `Occupancy`
 
