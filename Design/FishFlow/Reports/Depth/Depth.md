@@ -147,16 +147,16 @@ We need to ensure that we check that the following are in the meta_data passed t
 - region: str
 - reference_region: str
 - description: str
+- reference_time_window: \[datetime, datetime]
 
 These (and only these) should be provided in the example in the README.md
 
 The following should be derived from the data provided
 - resolution: int (h3 resolution)
-- reference_time_window: \[datetime, datetime] (form `model_actuals_df`)
 - grid_size: int (number of h3 cells in the geojson)
 - depth_bins: \[float, float, ..., float] (derived from the context)
 - support: \[float, float, ..., float] (derived from `compute_support`)
-- time_window: \[datetime, datetime] (from `model_df`)
+- time_window: \[datetime, datetime] (from `context_df`)
 
 ## `build_minimums`
 

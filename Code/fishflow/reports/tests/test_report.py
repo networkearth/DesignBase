@@ -238,7 +238,14 @@ class TestBuildReport:
             # Create minimal test data
             meta_data = {
                 'scenario_id': 'test_scenario_001',
-                'description': 'Test scenario'
+                'name': 'Test Scenario',
+                'species': 'Test Species',
+                'model': 'test_model',
+                'reference_model': 'test_reference_model',
+                'region': 'test_region',
+                'reference_region': 'test_reference_region',
+                'description': 'Test scenario',
+                'reference_time_window': ['2022-01-01T00:00:00', '2022-12-31T23:59:59']
             }
 
             model_df = pd.DataFrame({
@@ -320,7 +327,17 @@ class TestBuildReport:
     def test_mismatched_decision_choice_pairs_raises_error(self):
         """Should raise error if model and reference have mismatched pairs."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            meta_data = {'scenario_id': 'test'}
+            meta_data = {
+                'scenario_id': 'test',
+                'name': 'Test',
+                'species': 'Test',
+                'model': 'test',
+                'reference_model': 'test_ref',
+                'region': 'test',
+                'reference_region': 'test',
+                'description': 'Test',
+                'reference_time_window': ['2022-01-01T00:00:00', '2022-12-31T23:59:59']
+            }
 
             model_df = pd.DataFrame({
                 '_decision': [1, 1],

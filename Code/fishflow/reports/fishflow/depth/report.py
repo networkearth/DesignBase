@@ -21,7 +21,7 @@ def validate_metadata(meta_data: Dict[str, Any]) -> None:
     Validate that all required user-provided metadata fields are present.
 
     Only validates fields that should be provided by the user. Other fields
-    (resolution, reference_time_window, grid_size, depth_bins, support, time_window)
+    (resolution, grid_size, depth_bins, support, time_window)
     are derived from the data.
 
     Args:
@@ -38,7 +38,8 @@ def validate_metadata(meta_data: Dict[str, Any]) -> None:
         'reference_model',
         'region',
         'reference_region',
-        'description'
+        'description',
+        'reference_time_window'
     ]
 
     missing_fields = [field for field in required_fields if field not in meta_data]
@@ -241,9 +242,8 @@ def build_report(
     Args:
         meta_data: Metadata dictionary for this scenario. Required fields: 'scenario_id',
             'name', 'species', 'model', 'reference_model', 'region', 'reference_region',
-            'description'. The following fields are automatically derived: 'resolution',
-            'grid_size', 'depth_bins', 'support', 'time_window'. The 'reference_time_window'
-            field can be optionally provided; if not provided, it will be set to None.
+            'description', 'reference_time_window'. The following fields are automatically
+            derived: 'resolution', 'grid_size', 'depth_bins', 'support', 'time_window'.
         model_df: DataFrame with '_decision', '_choice', 'probability' for the target model.
         reference_model_df: DataFrame with '_decision', '_choice', 'probability' for
             the reference model.
@@ -318,7 +318,7 @@ def build_report(
     unique_depth_bins = sorted(context_df['depth_bin'].unique())
     meta_data['depth_bins'] = [float(db) for db in unique_depth_bins]
 
-    # 3. time_window: min and max datetime from context_df (which has model_df data)
+    # 3. time_window: min and max datetime from context_df
     min_datetime = context_df['datetime'].min()
     max_datetime = context_df['datetime'].max()
     meta_data['time_window'] = [
@@ -326,14 +326,7 @@ def build_report(
         max_datetime.isoformat() if hasattr(max_datetime, 'isoformat') else str(max_datetime)
     ]
 
-    # Note: reference_time_window cannot be derived from model_actuals_df as it only contains
-    # _decision, _choice, and probability (no datetime info). If the user needs this field,
-    # they should provide it in meta_data. Otherwise, we'll set it to None.
-    # grid_size and support will be added below after computation
-
-    # Set reference_time_window if not provided (cannot be derived from current data)
-    if 'reference_time_window' not in meta_data:
-        meta_data['reference_time_window'] = None
+    # Note: grid_size and support will be added below after computation
 
     # 1. Write meta_data.json (will be updated later with remaining derived fields)
     meta_data_path = os.path.join(scenario_dir, 'meta_data.json')
