@@ -49,3 +49,16 @@ Designs get overwhelming fast. Even simple web apps have many pieces to build an
 **Build** defines how the component breaks down into sub-components, how to call those sub-components' interfaces in this specific context (with concrete parameters), and how data/control flows between them—a mini architecture. Forces you to break larger components into smaller, reusable pieces.
 
 Together, these define *what* the component does, how it interfaces with others, and what constraints apply—but not *how* it works internally. That's left as a black box for implementation... except for the build. So why specify the build? Because forcing breakdown into smaller components drives precision and reuse, preventing components from becoming code-spaghetti monoliths.
+
+## Compiling
+
+1. Right the design spec
+2. Use `Review.md` from `Prompts/` to review with the LLM
+3. Make updates until satisfied
+4. Make a new branch
+5. Use `Implementation.md` to have it right the code
+6. Review the code 
+7. Make updates to the design
+8. Run `IncorporateDesignChanges.md` and commit the results + changes to design
+9. Repeat until satisfied
+10. Merge

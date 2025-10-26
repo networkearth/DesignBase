@@ -135,6 +135,33 @@ We should end up with as many occupancy parquet files as there are `cell_id`'s
 
 Separately, `model_actuals_df` and `reference_model_actuals_df` should have the same `_decision` and `_choice` pairs and `selections_actuals_df` should have the same set of `_decision` values with each `_choice` being matched to a choice in `model_actuals_df` (however not all choices will be present as this is the actual selected choices, not all choices available per decision)
 
+#### Checks
+
+We need to ensure that we check that the following are in the meta_data passed to the function:
+
+- scenario_id: str
+- name: str
+- species: str
+- model: str
+- reference model: str
+- region: str
+- reference_region: str
+- description: str
+- reference_time_window: \[datetime, datetime]
+
+These (and only these) should be provided in the example in the README.md
+
+The following should be derived from the data provided
+- resolution: int (h3 resolution)
+- grid_size: int (number of h3 cells in the geojson)
+- depth_bins: \[float, float, ..., float] (derived from the context)
+- support: \[float, float, ..., float] (derived from `compute_support`)
+- time_window: \[datetime, datetime] (from `context_df`)
+
+#### Notes
+
+the function to use to get the `h3` resolution is `get_resolution` not `h3_get_resolution`.
+
 ## `build_minimums`
 
 ### Interfaces
@@ -167,6 +194,14 @@ fishflow
 ```
 
 ### Constraints
+
+Note that `minimums` should be of the form:
+
+```python
+{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}
+```
+
+where `minimums_array` is indeed an array representing the minimums per hour (from 0 - 23). 
 
 ## `build_occupancy`
 
