@@ -1,6 +1,5 @@
 ## `MapLegend`
-
-### Interfaces
+`fishflow_app/src/components/mapping/MapLegend.jsx`
 
 ```jsx
 <MapLegend
@@ -23,31 +22,14 @@
 - **@style** `size` - `"x-small"` | `"small"` | `"medium"` | `"large"` - Controls sizing to work flexibly across screen sizes and parent components (default: `"medium"`)
 - **@style** `layout` - `"vertical"` | `"horizontal"` - Determines arrangement of color swatches and labels (default: `"vertical"`)
 - **@style** `background` - Hex color code for component background (default: `"#ffffff"`)
-### Use Cases
+#### Notes
 
 A static react display component that provides a legend for map visualizations by showing color swatches paired with their corresponding labels.
-### Build
 
 - Should be a compact rectangle containing:
 	- Unit name as the title
 	- Color swatches paired with labels, displayed in the order provided
-
-```bash
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- components
-|   |   |   |
-|   |   |   +-- mapping
-|   |   |   |   |
-|   |   |   |   +-- MapLegend.js <--
-```
-### Constraints
-
-#### Styling
+##### Styling
 
 **Colors**
 - Border: `#dee2e6`
@@ -87,87 +69,72 @@ fishflow
 - Sufficient color contrast for text
 
 ## `interpolateColor`
-
-### Interfaces
+`fishflow_app/src/functions/colors.js`
 
 ```jsx
 interpolateColor(lowColor, highColor, values, colors) --> colors
 ```
 
-- **@input** `lowColor` - hash of the color for the low end of the values
-- **@input** `highColor` - hash of the color for the high end of the values
-- **@input** `values` - values over which to interpolate (note they may not be in order)
-- **@returns** `colors` - colors for each value 
+- **@input** `lowColor` - hash of the color for the low end of the values (e.g., `#e8f4f8`)
+- **@input** `highColor` - hash of the color for the high end of the values (e.g., `#1589b0`)
+- **@input** `values` - object mapping cell_id to numeric value (note: values will not contain nulls - all cells have valid numeric values)
+- **@returns** `colors` - object mapping cell_id to interpolated hex color string
+#### Notes
 
-### Use Cases
+Used to give colors to values given some color scale.
 
-Used to give colors to values given some color scale. 
-### Build
+Implementation:
+1. Extract all numeric values from the `values` object
+2. Find min and max values
+3. Use `d3.scaleLinear()` to create an interpolator from `lowColor` to `highColor` based on the min-max range
+4. Map each cell_id's value to its interpolated color
+5. Return object with same keys as `values`, mapping cell_id to color
 
-Should use `d3` to interpolate between the colors given.
-#### Placement
-
-```bash
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- functions
-|   |   |   |
-|   |   |   +-- common
-|   |   |   |   |
-|   |   |   |   +-- coloring.js <--
-```
-### Constraints
-
-N/A
+**No null handling needed** - all values in the application are guaranteed to be valid numbers.
 
 ## `buildColorScale`
-
-### Interfaces
+`fishflow_app/src/functions/colors.js`
 
 ```jsx
 buildColorScale(quantiles, values, colors) --> colorScale
 ```
 
-- **@input** `quantiles` - the quantiles to build the color scale for
-- **@input** `values` - the values
-- **@input** `colors` - the colors associated with the values
-- **@returns** `colorScale` - pairs of value-at-the-quantile, color-at-the-value that can be passed to a `MapLegend` component
+- **@input** `quantiles` - array of quantile percentages (e.g., `[0, 25, 50, 75, 100]`)
+- **@input** `values` - object mapping cell_id to numeric value
+- **@input** `colors` - object mapping cell_id to hex color string (from `interpolateColor`)
+- **@returns** `colorScale` - array of `[label, color]` tuples that can be passed to a `MapLegend` component
 
-### Use Cases
+#### Notes
 
 Builds a colorScale for a `MapLegend` given a set of values, colors, and the quantiles of interest.
-### Build
 
-#### Placement
+Implementation:
+1. Extract all numeric values from the `values` object into an array
+2. For each quantile percentage:
+   - Use `d3.quantile()` to calculate the value at that quantile
+   - Find the color corresponding to that value from the `colors` object
+   - Create a label string (e.g., "12.5" for the value, rounded to 1 decimal place)
+   - Add `[label, color]` tuple to the colorScale array
+3. Return the array of tuples
 
-```bash
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- functions
-|   |   |   |
-|   |   |   +-- common
-|   |   |   |   |
-|   |   |   |   +-- coloring.js <--
+**Return format example:**
+```javascript
+[
+  ['0.0', '#e8f4f8'],
+  ['0.3', '#b3d9e6'],
+  ['0.5', '#7fbfd4'],
+  ['0.7', '#4aa4c2'],
+  ['1.0', '#1589b0']
+]
 ```
-### Constraints
-
-N/A
 
 ## `CellMap`
+`fishflow_app/src/components/mapping/CellMap.jsx`
 
-### Interfaces
 ```jsx
 <CellMap
   allowMultiSelect={true}
-  values={{ cell_1: 45.2, cell_2: 67.8, cell_3: null, cell_4: 23.1 }}
+  values={{ cell_1: 45.2, cell_2: 67.8, cell_3: 12.5, cell_4: 23.1 }}
   geojson={...}
   unit="Temperature (°C)"
   lowColor="#e8f4f8"
@@ -183,7 +150,7 @@ N/A
 ```
 
 - **@input** `allowMultiSelect` - Boolean, whether multiple cell selection is allowed
-- **@input** `values` - Object mapping `cell_id` to numeric value (nulls allowed)
+- **@input** `values` - Object mapping `cell_id` to numeric value (all values are valid numbers, no nulls)
 - **@input** `geojson` - Geojson of polygons to display with a `cell_id` for each polygon
 - **@input** `unit` - String, unit of measurement for values
 - **@input** `lowColor` - Hex color code for minimum value
@@ -199,7 +166,7 @@ N/A
 - **@product** `colors` - Object mapping `cell_id` to hex color based on value
 - **@product** `colorScale` - Array of `[label, color]` tuples for `MapLegend`
 - **@affects** `selectedCells`
-### Use Cases
+#### Notes
 
 Displays polygons on a map colored by `values` and allows user to select specific cells for further drop down (implemented elsewhere in an app using a `CellMap`).
 
@@ -215,12 +182,12 @@ When users hover over a cell, a tooltip displays the cell's value and unit direc
 **Re-Centering**
 When new `geometries` are passed, map recenters to `center` and zooms to `zoom` level. Other interactions do not trigger re-centering to avoid user experience disruption.
 
-### Build
+##### How to Build It
 
 **react-leaflet Map** (fills entire container)
 - Displays polygons (cells) colored according to `colors`
 - Selected cells have bold borders
-- Null values result in no fill for that cell
+- All cells will have valid numeric values and corresponding colors
 - Fills entire parent `<div>`
 
 **Color Interpolation**
@@ -228,7 +195,7 @@ When new `geometries` are passed, map recenters to `center` and zooms to `zoom` 
 lowColor + highColor + values → interpolateColor() → colors
 ```
 - Interpolates colors between `lowColor` and `highColor` based on values
-- Null values have no color assigned
+- All cells have valid numeric values and receive interpolated colors
 
 **Color Scale Generation**
 ```
@@ -248,37 +215,13 @@ values + colors → buildColorScale(quantiles: 0, 25, 50, 75, 100) → colorScal
 - Only visible when `allowMultiSelect=true`
 - Background color matches `MapLegend` background
 
-#### Placement
-
-```bash
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- components
-|   |   |   |
-|   |   |   +-- mapping
-|   |   |   |   |
-|   |   |   |   +-- CellMap.js <--
-```
-
-#### Dependencies
-
-- `MapLegend`
-- `interpolateColors`
-- `buildColorScale`
-
-### Constraints
-
-#### Style
+##### Style
 
 **Map Container**
 - Fills 100% of parent `<div>` width and height
 
 **Cell (Polygon) Styling**
-- Fill: Color from `colors` object, or no fill if value is null
+- Fill: Color from `colors` object (all cells have valid colors)
 - Border: `1px solid #dee2e6` (normal state)
 - Selected border: `3px solid #212529` (bold to indicate selection)
 - Transition: `all 0.15s ease-in-out`
@@ -316,6 +259,13 @@ fishflow
 - ARIA labels for interactive elements
 - Focus states on selectable cells
 - Screen reader support for map legend and values
+#### Dependencies
+
+- `MapLegend`
+- `interpolateColors`
+- `buildColorScale`
+
+
 
 
 

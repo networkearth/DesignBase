@@ -1,6 +1,5 @@
 ## `ContourDateGraph`
-
-### Interfaces
+`fishflow_app/src/components/plotting/ContourDateGraph.jsx`
 
 ```jsx
 <ContourDateGraph
@@ -26,7 +25,7 @@
 - **@input** `title` - String title displayed in top right corner within plot area
 - **@input** `size` - `"small"` | `"medium"` | `"large"` - Controls text sizing only (default: `"medium"`)
 - **@state** `hoveredLine` - Tracks which line (index and type: complete/highlight) is currently being hovered
-### Use Cases
+#### Notes
 
 The idea here is to show a series of lines (over dates) where each line has a specific support and certain sections of those lines are highlighted for contrast. 
 
@@ -57,7 +56,7 @@ The idea here is to show a series of lines (over dates) where each line has a sp
 - Tooltip must track which specific line is being hovered to display the correct y and support values for that line
 - Line hover detection: When lines are not directly overlapping, select the line nearest to cursor position. When lines are exactly overlapping, use simplest implementation (first match or rendering order)
 
-### Build
+##### How to Build It
 
 Uses `recharts` library for chart rendering with:
 
@@ -67,24 +66,7 @@ Uses `recharts` library for chart rendering with:
 - Tooltip component for hover interactions with instant positioning
 - Active dot indicator on hovered line
 - Hover state tracking to identify which specific line is being interacted with
-
-#### Placement
-
-```
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- components
-|   |   |   |
-|   |   |   +-- plotting
-|   |   |   |   |
-|   |   |   |   +-- ContourDateGraph.jsx <--
-```
-
-### Constraints
+##### Constraints
 
 **Data Constraints:**
 
@@ -114,7 +96,7 @@ fishflow
 - Retrieve the corresponding support value for the hovered line
 - Display all values in tooltip rounded to 3 decimal places
 - CRITICAL: Must use the line index from hover state to get the correct y value, not the default payload value from Recharts
-#### Styling
+##### Styling
 
 **Component Layout**
 

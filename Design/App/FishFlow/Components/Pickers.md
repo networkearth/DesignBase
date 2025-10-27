@@ -1,6 +1,6 @@
 ## `CheckBoxPicker`
+`fishflow_app/src/components/common/CheckBoxPicker.jsx`
 
-### Interfaces
 ```jsx
 <CheckBoxPicker
   labels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']}
@@ -26,30 +26,12 @@
   - Vertical layout: `"top"` | `"bottom"` | `"center"`
 - **@affects** `selected`
 
-### Use Cases
+#### Notes
 
 When users click on a box that is not selected, `selected` should be updated to include that item's index. When users click on a box that is already selected, it should remove that index from `selected`.
 
-### Build
 There should be a box for each label in the `labels` array, set inside a container with a customizable title. Each box should display its corresponding label. When a box is selected, it should change color to indicate selection.
-
-#### Placement
-
-```bash
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- components
-|   |   |   |
-|   |   |   +-- common
-|   |   |   |   |
-|   |   |   |   +-- CheckBoxPicker.jsx <--
-```
-### Constraints
-#### Styling
+##### Styling
 
 **Colors**
 - Primary/Selected: `#0d6efd` (Bootstrap blue)
@@ -87,8 +69,8 @@ fishflow
 - Each box has `role="checkbox"` and `aria-checked` state
 
 ## `HourPicker`
+`fishflow_app/src/components/common/HourPicker.jsx`
 
-### Interfaces
 ```jsx
 <HourPicker
   selectedHours={selectedHours}
@@ -109,41 +91,21 @@ fishflow
 - **@style** `stacks` - Number of rows (horizontal) or columns (vertical) (required)
 - **@style** `justify` - `"left"` | `"right"` | `"center"` (horizontal) or `"top"` | `"bottom"` | `"center"` (vertical) (default: `"center"`)
 - **@affects** `selectedHours`
-### Use Cases
+#### Notes
 A specialized wrapper around `CheckBoxPicker` configured for hour selection. Converts between hour numbers (0-23) and 0-based indices (0-23) for the underlying `CheckBoxPicker`.
 
-### Build
 Uses `CheckBoxPicker` with `labels` set to hour numbers `['0', '1', '2', ..., '23']`.
 
+##### Constraints
+- Hours (0-23) map directly to 0-based indices (0-23), so no conversion needed
+- Simply passes through values to and from `CheckBoxPicker`
 #### Dependencies 
 
 - `CheckBoxPicker`
 
-#### Placement
-
-```bash
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- components
-|   |   |   |
-|   |   |   +-- common
-|   |   |   |   |
-|   |   |   |   +-- HourPicker.jsx <--
-```
-### Constraints
-
-- Hours (0-23) map directly to 0-based indices (0-23), so no conversion needed
-- Simply passes through values to and from `CheckBoxPicker`
-#### Styling
-Inherits all styling from `CheckBoxPicker` component.
-
 ## `MonthPicker`
+`fishflow_app/src/components/common/MonthPicker.jsx`
 
-### Interfaces
 ```jsx
 <MonthPicker
   selectedMonths={selectedMonths}
@@ -164,35 +126,15 @@ Inherits all styling from `CheckBoxPicker` component.
 - **@style** `stacks` - Number of rows (horizontal) or columns (vertical) (required)
 - **@style** `justify` - `"left"` | `"right"` | `"center"` (horizontal) or `"top"` | `"bottom"` | `"center"` (vertical) (default: `"center"`)
 - **@affects** `selectedMonths`
-### Use Cases
+#### Notes
 A specialized wrapper around `CheckBoxPicker` configured for month selection. Converts between 1-based month numbers (1-12) and 0-based indices (0-11) for the underlying `CheckBoxPicker`.
 
-### Build
 Uses `CheckBoxPicker` with `labels` set to month abbreviations `['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']`.
 
-#### Dependencies
-
-- `CheckBoxPicker`
-
-#### Placement
-
-```bash
-fishflow
-|
-+-- frontend
-|   |
-|   +-- src
-|   |   |
-|   |   +-- components
-|   |   |   |
-|   |   |   +-- common
-|   |   |   |   |
-|   |   |   |   +-- MonthPicker.jsx <--
-```
-### Constraints
-
+##### Constraints
 - Converts `selectedMonths` (1-12) to 0-based indices before passing to `CheckBoxPicker`
 - Converts 0-based indices back to month numbers (1-12) when updating `selectedMonths`
-#### Styling (Bootstrap Conventions)
-Inherits all styling from `CheckBoxPicker` component.
+#### Dependencies
+- `CheckBoxPicker`
+
 
