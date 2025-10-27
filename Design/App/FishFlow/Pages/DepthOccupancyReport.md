@@ -289,13 +289,15 @@ loadGlobalData(scenario_id) -> See Below
 - @state `geometries` (GeoJson where every polygon has a `cell_id`)
 - @state `cell_depths` (maximum depth at each cell)
 - @state `timestamps` (full array of timestamps (in order) for this scenario)
-- @state `minimums` `{cell_id(int) -> {month(int) -> minimums_array}}` where the minimums array has for each month a hour minimum occupancy over that hour for the month in question (hours are 0-23). Note the depth bin has been removed here as we're only ever going to care about the maximum depth recorded in `cell_depths`.
+- @state `minimums` `{cell_id(int) -> depth_bin -> {month(int) -> minimums_array}}}` where the minimums array has for each month a hour minimum occupancy over that hour for the month in question (hours are 0-23). 
 
 For further context on the above see `../../../API/FishFlow/Depth`
 
 #### Notes
 
 Used by `DepthOccupancyReport` to load everything about the report except the occupancy data. 
+
+The `depth_bin` and `month` keys will need to be converted back to `float` and `int` respectively (json will have stringified them and the keys won't match the types we'll be using to index). 
 
 ##### Build
 
@@ -446,7 +448,7 @@ Calculates the minimum occupancy value for each cell given the user's selected m
 Algorithm:
 1. For each cell_id in minimums:
    - Get the depth_bin for this cell from cell_depths
-   - Filter to only that depth_bin in minimums[cell_id]
+   - Filter to only that depth_bin in minimums[cell_id] 
    - For each selected month:
      - Get the minimums_array for that month
      - For each selected hour:

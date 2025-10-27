@@ -15,10 +15,12 @@ export const getApiBaseUrl = () => {
  * Loads global data for a depth occupancy scenario.
  *
  * Fetches scenario metadata, geometries, cell depths, timestamps, and minimums
- * from the FishFlow API.
+ * from the FishFlow API. Converts JSON stringified keys (depth_bin, month) back
+ * to their proper numeric types (float, int).
  *
  * @param {string} scenarioId - The ID of the scenario to load
  * @returns {Promise<Object>} Object containing scenario, geometries, cell_depths, timestamps, minimums
+ *   where minimums is structured as: {cell_id -> depth_bin -> month -> minimums_array}
  * @throws {Error} If any API request fails
  */
 export async function loadGlobalData(scenarioId) {
@@ -46,12 +48,21 @@ export async function loadGlobalData(scenarioId) {
     const timestamps = timestampsResponse.data;
     const minimumsRaw = minimumsResponse.data;
 
-    // Filter minimums to only include the deepest depth bin per cell
+    // Convert JSON string keys back to proper types
+    // JSON stringifies numeric keys, so we need to convert depth_bin (float) and month (int) back
     const minimums = {};
-    for (const [cellId, depthBins] of Object.entries(minimumsRaw)) {
-      const depthBin = cell_depths[cellId];
-      if (depthBins[depthBin]) {
-        minimums[cellId] = depthBins[depthBin];
+    for (const [cellIdStr, depthBins] of Object.entries(minimumsRaw)) {
+      const cellId = parseInt(cellIdStr, 10);
+      minimums[cellId] = {};
+
+      for (const [depthBinStr, monthData] of Object.entries(depthBins)) {
+        const depthBin = parseFloat(depthBinStr);
+        minimums[cellId][depthBin] = {};
+
+        for (const [monthStr, minimumsArray] of Object.entries(monthData)) {
+          const month = parseInt(monthStr, 10);
+          minimums[cellId][depthBin][month] = minimumsArray;
+        }
       }
     }
 
@@ -180,8 +191,11 @@ export function buildHighlightIndices(filtered_timestamps, selectedHours) {
 export function calculateFilteredMinimums(minimums, cell_depths, selectedMonths, selectedHours) {
   const filtered_minimums = {};
 
-  for (const [cellId, depthBins] of Object.entries(minimums)) {
+  for (const [cellIdStr, depthBins] of Object.entries(minimums)) {
+    const cellId = parseInt(cellIdStr, 10);
     const depthBin = cell_depths[cellId];
+
+    // Access month data using the numeric depth_bin key
     const monthData = depthBins[depthBin];
 
     if (!monthData) {
@@ -190,6 +204,7 @@ export function calculateFilteredMinimums(minimums, cell_depths, selectedMonths,
 
     let minValue = Infinity;
 
+    // Iterate through selected months using numeric keys
     for (const month of selectedMonths) {
       const hourArray = monthData[month];
       if (!hourArray) {
