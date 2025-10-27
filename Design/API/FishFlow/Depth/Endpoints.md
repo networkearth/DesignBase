@@ -119,6 +119,8 @@ get_timestamps(scenario_id: str) --> Timestamps
 ```
 
 Simple pass through of timestamps for the `scenario_id` specified.
+
+DO NOT wrap the array. It should simply be an array of timestamps. 
 ## `/v1/depth/scenario/{scenario_id}/minimums`
 ### GET
 #### Model
@@ -138,7 +140,11 @@ Model of `MinimumsSchema`
 get_minimums(scenario_id: str) --> Minimums
 ```
 
-Simple pass through of minimums for the `scenario_id` specified.
+Simple pass through of minimums for the `scenario_id` specified. DO NOT wrap the minimums. It should simply be:
+
+`{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}`
+
+`minimums_array` is the minimum depth occupancy in that cell and month per hour `0-23`. It is an array of length 24 containing floats.
 ## `/v1/depth/scenario/{scenario_id}/occupancy?cell_id={cell_id}&depth_bin={depth_bin}`
 ### GET
 #### Model

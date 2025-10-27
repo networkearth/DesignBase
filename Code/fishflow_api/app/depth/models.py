@@ -58,20 +58,23 @@ class CellDepths(RootModel[Dict[int, float]]):
     root: Dict[int, float] = Field(..., description="Mapping of cell_id to maximum_depth_bin")
 
 
-class Timestamps(BaseModel):
+class Timestamps(RootModel[List[str]]):
     """Model for timestamps array.
 
     Corresponds to TimestampsSchema - ordered array of all timestamps in the report.
+    Returns the array directly without wrapping.
     """
-    timestamps: List[str] = Field(..., description="Ordered list of timestamps")
+    root: List[str] = Field(..., description="Ordered list of timestamps")
 
 
-class Minimums(BaseModel):
+class Minimums(RootModel[Dict[int, Dict[float, Dict[int, List[float]]]]]):
     """Model for minimum depth occupancy data.
 
     Corresponds to MinimumsSchema - nested structure of cell_id -> depth_bin -> month -> hourly minimums.
+    Returns the nested dict directly without wrapping: {cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}
+    where minimums_array is an array of length 24 containing floats (minimum depth occupancy per hour 0-23).
     """
-    minimums: Dict[int, Dict[float, Dict[int, List[float]]]] = Field(
+    root: Dict[int, Dict[float, Dict[int, List[float]]]] = Field(
         ...,
         description="Nested mapping: cell_id -> depth_bin -> month -> array[24] of hourly minimums"
     )

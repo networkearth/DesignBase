@@ -207,28 +207,40 @@ class TestTimestampsEndpoint:
     """Test timestamps endpoint."""
 
     def test_get_timestamps(self, client):
-        """Test getting timestamps."""
+        """Test getting timestamps.
+
+        The endpoint should return an unwrapped array of timestamps directly,
+        as specified in the design document.
+        """
         response = client.get("/v1/depth/scenario/test_scenario_1/timestamps")
         assert response.status_code == 200
         data = response.json()
-        assert "timestamps" in data
-        assert len(data["timestamps"]) == 3
-        assert data["timestamps"][0] == "2024-01-01 00:00:00"
+        # Response should be an array directly, not wrapped in {"timestamps": ...}
+        assert isinstance(data, list)
+        assert len(data) == 3
+        assert data[0] == "2024-01-01 00:00:00"
 
 
 class TestMinimumsEndpoint:
     """Test minimums endpoint."""
 
     def test_get_minimums(self, client):
-        """Test getting minimums."""
+        """Test getting minimums.
+
+        The endpoint should return an unwrapped nested dict directly,
+        as specified in the design document:
+        {cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}
+        """
         response = client.get("/v1/depth/scenario/test_scenario_1/minimums")
         assert response.status_code == 200
         data = response.json()
-        assert "minimums" in data
-        assert "1" in data["minimums"]
-        assert "10.0" in data["minimums"]["1"]
-        assert "1" in data["minimums"]["1"]["10.0"]
-        assert len(data["minimums"]["1"]["10.0"]["1"]) == 24
+        # Response should be the nested dict directly, not wrapped in {"minimums": ...}
+        assert isinstance(data, dict)
+        assert "1" in data
+        assert "10.0" in data["1"]
+        assert "1" in data["1"]["10.0"]
+        # minimums_array should be length 24 (hourly data 0-23)
+        assert len(data["1"]["10.0"]["1"]) == 24
 
 
 class TestOccupancyEndpoint:

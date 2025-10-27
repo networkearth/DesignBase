@@ -232,7 +232,7 @@ def get_timestamps(scenario_id: str) -> Timestamps:
         scenario_id: Unique identifier for the scenario
 
     Returns:
-        Timestamps model with ordered list of timestamps
+        Timestamps model with ordered list of timestamps (unwrapped array)
 
     Raises:
         HTTPException: If scenario not found or data is corrupt
@@ -246,7 +246,7 @@ def get_timestamps(scenario_id: str) -> Timestamps:
         if not isinstance(timestamps_data, list):
             raise ValueError("Timestamps data must be a list")
 
-        return Timestamps(timestamps=timestamps_data)
+        return Timestamps(timestamps_data)
 
     except FileNotFoundError:
         raise HTTPException(
@@ -272,7 +272,7 @@ def get_minimums(scenario_id: str) -> Minimums:
         scenario_id: Unique identifier for the scenario
 
     Returns:
-        Minimums model with nested cell/depth/month/hourly data
+        Minimums model with nested cell/depth/month/hourly data (unwrapped dict)
 
     Raises:
         HTTPException: If scenario not found or data is corrupt
@@ -297,7 +297,7 @@ def get_minimums(scenario_id: str) -> Minimums:
                     month = int(month_str)
                     minimums_converted[cell_id][depth_bin][month] = hourly_data
 
-        return Minimums(minimums=minimums_converted)
+        return Minimums(minimums_converted)
 
     except FileNotFoundError:
         raise HTTPException(
