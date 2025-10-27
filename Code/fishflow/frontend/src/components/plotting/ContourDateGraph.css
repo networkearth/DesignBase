@@ -1,0 +1,27 @@
+.contour-date-graph {
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+}
+
+.contour-date-graph__title {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  font-weight: 500;
+  color: #212529;
+  z-index: 10;
+}
+
+.contour-date-graph__tooltip {
+  background: #212529;
+  color: #ffffff;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.contour-date-graph__tooltip div {
+  margin: 0.25rem 0;
+}
