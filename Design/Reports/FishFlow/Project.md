@@ -1,6 +1,10 @@
 ## Summary
 This is a python package for generating reports that can be viewed in the `FishFlow` app using the `FishFlow` API. 
 
+```python
+from fishflow.depth.report import build_report
+```
+
 ## Installation
 From the directory where `setup.py` lives:
 ```bash
