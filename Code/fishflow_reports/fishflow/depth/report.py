@@ -36,7 +36,7 @@ def build_minimums(
     Returns:
         Nested dict structure:
         {cell_id -> {depth_bin -> {month -> [24 hourly minimums]}}}
-        where month is 0-11 and the array has one minimum per hour (0-23).
+        where month is 1-12 and the array has one minimum per hour (0-23).
 
     Raises:
         ValueError: If required columns are missing.
@@ -56,7 +56,7 @@ def build_minimums(
         return minimums
 
     # Extract month and hour from datetime
-    filtered['month'] = pd.to_datetime(filtered['datetime']).dt.month - 1  # 0-11
+    filtered['month'] = pd.to_datetime(filtered['datetime']).dt.month  # 1-12
     filtered['hour'] = pd.to_datetime(filtered['datetime']).dt.hour  # 0-23
 
     # Group by cell_id, depth_bin, month, hour and find minimum

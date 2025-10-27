@@ -51,7 +51,7 @@ Example:
 
 `{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}`
 
-`minimums_array` is the minimum depth occupancy in that cell and month per hour `0-23`. It is an array of length 24 containing floats.
+`minimums_array` is the minimum depth occupancy in that cell and month per hour `0-23`. It is an array of length 24 containing floats. Months should run from `1-12`. 
 
 ## `TimestampsSchema`
 
