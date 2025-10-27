@@ -1,0 +1,69 @@
+/* CellMap Component Styles */
+
+.cell-map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.cell-map__container {
+  width: 100%;
+  height: 100%;
+}
+
+/* Legend positioning */
+.cell-map__legend {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+/* Clear Selection Button */
+.cell-map__clear-button {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #212529;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-family: inherit;
+}
+
+.cell-map__clear-button:hover {
+  background: rgba(13, 110, 253, 0.1) !important;
+}
+
+.cell-map__clear-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Tooltip */
+.cell-map__tooltip {
+  position: fixed;
+  background: #212529;
+  color: #ffffff;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  pointer-events: none;
+  z-index: 10000;
+  white-space: nowrap;
+}
+
+/* Leaflet overrides for accessibility */
+.leaflet-interactive {
+  cursor: pointer;
+}
+
+.leaflet-interactive:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
