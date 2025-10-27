@@ -61,6 +61,73 @@ end
 	- React Router should be used for this functionality.
 ### Build
 
+#### Page Layout
+
+The page should use a CSS Grid layout with the following structure:
+
+```
++--------------------------------------------------+
+|                    TitleBar                      |
++--------------------------------------------------+
+|                   HourPicker                     |
++--------------------------------------------------+
+|              |                        |          |
+|              |                        |          |
+|   MonthPicker|       CellMap          |          |
+|              |                        |          |
+|              |                        |          |
++--------------+------------------------+----------+
+|              |   ContourDateGraph     |          |
+|              |                        |          |
++--------------+------------------------+----------+
+```
+
+**Layout Specifications:**
+- **TitleBar**: Full width, fixed height
+- **HourPicker**: Full width horizontal strip below TitleBar
+- **MonthPicker**: Left side vertical strip (fixed width)
+- **CellMap**: Center main area, takes majority of vertical space
+- **ContourDateGraph**: Full width below map (excluding MonthPicker strip on left)
+
+**CSS Grid Configuration:**
+```css
+.depth-occupancy-report {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  height: 100vh;
+  width: 100vw;
+}
+
+.title-bar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.hour-picker {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.month-picker {
+  grid-column: 1;
+  grid-row: 3 / 5;
+}
+
+.cell-map {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.contour-date-graph {
+  grid-column: 2;
+  grid-row: 4;
+  height: 300px;
+}
+```
+
+#### Components
+
 `TitleBar`
 *Should display the `scenario.name`, that this is a depth occupancy report, and give a button to go back to selection as well as one to just go home.*
 
@@ -91,7 +158,7 @@ end
 `ContourDateGraph`
 
 ```jsx
-<LineChart
+<ContourDateGraph
   complete_y={filtered_occupancy_data[selectedCells[0]]}
   complete_x={filtered_timestamps}
   highlight_indices={highlight_indices}
@@ -157,6 +224,8 @@ Called whenever the user changes the months selection
 Called whenever the selected hours change or when the filtered timestamps change (due to `filterByMonth`)
 #### Dependencies
 
+- `TitleBar`
+- `ErrorPopup`
 - `../Components/CellMap.md:CellMap`
 - `../Components/Pickers.md:HourPicker`
 - `../Components/Pickers.md:MonthPicker`
@@ -165,6 +234,9 @@ Called whenever the selected hours change or when the filtered timestamps change
 - `loadOccupancy`
 - `filterByMonth`
 - `buildHighlightedIndices`
+- `calculateFilteredMinimums`
+- `parseUrlParams`
+- `updateUrlParams`
 
 #### Placement
 
@@ -343,3 +415,418 @@ fishflow
 ### Constraints
 
 N/A
+## `TitleBar`
+
+### Interfaces
+
+```jsx
+<TitleBar
+  scenarioName={scenario.name}
+  reportType="Depth Occupancy Report"
+  onBack={onNavigate}
+  onHome={onNavigate}
+/>
+```
+
+- **@input** `scenarioName` - String name of the scenario being displayed
+- **@input** `reportType` - String describing the type of report (e.g., "Depth Occupancy Report")
+- **@input** `onBack` - Function callback for navigating back to report selection
+- **@input** `onHome` - Function callback for navigating to home page
+
+### Use Cases
+
+Displays the report title with scenario name and navigation buttons for going back to selection or returning home.
+
+### Build
+
+Should display as a horizontal bar containing:
+- Report type and scenario name (left side)
+- Navigation buttons (right side):
+  - "Back to Selection" button
+  - "Home" button
+
+#### Placement
+
+```
+fishflow
+|
++-- frontend
+|   |
+|   +-- src
+|   |   |
+|   |   +-- components
+|   |   |   |
+|   |   |   +-- common
+|   |   |   |   |
+|   |   |   |   +-- TitleBar.jsx <--
+```
+
+### Constraints
+
+#### Styling
+
+**Colors**
+- Background: `#f8f9fa` (Bootstrap light grey)
+- Text: `#212529`
+- Border bottom: `1px solid #dee2e6`
+
+**Layout**
+- Display: flexbox with space-between justification
+- Padding: `1rem 1.5rem`
+- Width: 100% of parent container
+
+**Typography**
+- Report type font-size: `1.25rem` (20px)
+- Report type font-weight: `500`
+- Scenario name font-size: `1rem` (16px)
+- Font family: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
+
+**Button Styling**
+- Background: `#ffffff`
+- Border: `1px solid #dee2e6`
+- Border radius: `0.25rem`
+- Padding: `0.5rem 1rem`
+- Font size: `0.875rem`
+- Color: `#212529`
+- Cursor: `pointer`
+- Hover: `rgba(13, 110, 253, 0.1)` background tint
+- Transition: `all 0.15s ease-in-out`
+- Margin-left between buttons: `0.5rem`
+
+**Accessibility**
+- Semantic HTML (`<header>` element)
+- ARIA labels for navigation buttons
+- Keyboard navigable
+
+## `parseUrlParams`
+
+### Interfaces
+
+```jsx
+parseUrlParams(searchParams) -> {months, hours, cell_id}
+```
+
+- **@input** `searchParams` - URLSearchParams object from React Router
+- **@returns** `months` - Array of month numbers (1-12), or null if not present in URL
+- **@returns** `hours` - Array of hour numbers (0-23), or null if not present in URL  
+- **@returns** `cell_id` - Cell ID number, or null if not present in URL
+
+### Use Cases
+
+Parses URL query parameters on initial page load to restore user's selected state.
+
+### Build
+
+Parse the URL parameters:
+- `months`: Split comma-separated string, convert to integers
+- `hours`: Split comma-separated string, convert to integers
+- `cell_id`: Parse as integer
+
+If parameters are missing or malformed, return null for that parameter.
+
+#### Placement
+
+```
+fishflow
+|
++-- frontend
+|   |
+|   +-- src
+|   |   |
+|   |   +-- pages
+|   |   |   |
+|   |   |   +-- DepthOccupancyReport.jsx
+```
+
+### Constraints
+
+N/A
+
+## `updateUrlParams`
+
+### Interfaces
+
+```jsx
+updateUrlParams(navigate, scenario_id, months, hours, cell_id)
+```
+
+- **@input** `navigate` - React Router navigate function
+- **@input** `scenario_id` - Current scenario ID
+- **@input** `months` - Array of selected month numbers (1-12)
+- **@input** `hours` - Array of selected hour numbers (0-23)
+- **@input** `cell_id` - Selected cell ID
+
+### Use Cases
+
+Updates the URL to reflect current user selections without creating a browser history entry.
+
+### Build
+
+Build the URL query string:
+- `months`: Join array with commas
+- `hours`: Join array with commas
+- `cell_id`: Convert to string
+
+Use React Router's `navigate` with `replace: true` to update URL without adding to history:
+
+```jsx
+navigate(`/depth_occupancy/${scenario_id}?months=${monthsStr}&hours=${hoursStr}&cell_id=${cell_id}`, { replace: true });
+```
+
+#### Placement
+
+```
+fishflow
+|
++-- frontend
+|   |
+|   +-- src
+|   |   |
+|   |   +-- pages
+|   |   |   |
+|   |   |   +-- DepthOccupancyReport.jsx
+```
+
+### Constraints
+
+- Must use `replace: true` to avoid creating history entries
+- Should be called immediately when user makes selection changes
+
+## `calculateFilteredMinimums`
+
+### Interfaces
+
+```jsx
+calculateFilteredMinimums(minimums, cell_depths, selectedMonths, selectedHours) 
+  -> filtered_minimums
+```
+
+- **@input** `minimums` - `{cell_id(int) -> {depth_bin(float) -> {month(int) -> minimums_array}}}` from the API
+- **@input** `cell_depths` - `{cell_id(int) -> maximum_depth_bin(float)}` from the API
+- **@input** `selectedMonths` - Array of selected month numbers (1-12)
+- **@input** `selectedHours` - Array of selected hour numbers (0-23)
+- **@returns** `filtered_minimums` - `{cell_id(int) -> minimum_value(float)}` - the minimum occupancy value across all selected months and hours for each cell
+
+### Use Cases
+
+Calculates the minimum occupancy value for each cell given the user's selected months and hours. This is used to color the cells on the map.
+
+### Build
+
+Algorithm:
+1. For each cell_id in minimums:
+   - Get the depth_bin for this cell from cell_depths
+   - Filter to only that depth_bin in minimums[cell_id]
+   - For each selected month:
+     - Get the minimums_array for that month
+     - For each selected hour:
+       - Collect the minimum value at that hour index
+   - Take the minimum across all collected values
+   - Store as filtered_minimums[cell_id]
+
+Pseudocode:
+```javascript
+function calculateFilteredMinimums(minimums, cell_depths, selectedMonths, selectedHours) {
+  const filtered_minimums = {};
+  
+  for (const [cell_id, depth_bins] of Object.entries(minimums)) {
+    const depth_bin = cell_depths[cell_id];
+    const month_data = depth_bins[depth_bin];
+    
+    let min_value = Infinity;
+    
+    for (const month of selectedMonths) {
+      const hour_array = month_data[month];
+      for (const hour of selectedHours) {
+        min_value = Math.min(min_value, hour_array[hour]);
+      }
+    }
+    
+    filtered_minimums[cell_id] = min_value;
+  }
+  
+  return filtered_minimums;
+}
+```
+
+#### Placement
+
+```
+fishflow
+|
++-- frontend
+|   |
+|   +-- src
+|   |   |
+|   |   +-- pages
+|   |   |   |
+|   |   |   +-- DepthOccupancyReport.jsx
+```
+
+### Constraints
+
+- Should be called whenever selectedMonths or selectedHours changes
+- Assumes minimums has already been filtered to only include the relevant depth_bin per cell (as per loadGlobalData)
+
+## Error Handling
+
+### Interfaces
+
+N/A
+
+### Use Cases
+
+Provides user feedback when data loading fails or errors occur.
+
+### Build
+
+**Loading States:**
+- Display a loading spinner or message while fetching data from API
+- Loading should be shown during `loadGlobalData` and `loadOccupancy` operations
+- Use a simple loading component (can be a text message "Loading..." or a spinner)
+
+**Error Handling:**
+- If any API call fails (loadGlobalData or loadOccupancy), display an error popup/modal
+- Error popup should show:
+  - Clear message: "Failed to load data"
+  - Technical details if available (error message from API)
+  - A "Retry" button that attempts to reload the data
+  - A "Close" button to dismiss the error
+
+**Error Popup Component:**
+```jsx
+<ErrorPopup
+  message="Failed to load data"
+  details={error.message}
+  onRetry={retryFunction}
+  onClose={closeFunction}
+/>
+```
+
+**Implementation Notes:**
+- Use React state to track loading and error states
+- Wrap API calls in try-catch blocks
+- For loadGlobalData errors: prevent page from rendering until data loads
+- For loadOccupancy errors: show error but keep page functional (user can select different cells)
+
+### Placement
+
+```
+fishflow
+|
++-- frontend
+|   |
+|   +-- src
+|   |   |
+|   |   +-- components
+|   |   |   |
+|   |   |   +-- common
+|   |   |   |   |
+|   |   |   |   +-- ErrorPopup.jsx
+```
+
+### Constraints
+
+#### Styling
+
+**Error Popup:**
+- Modal overlay: Semi-transparent black background `rgba(0, 0, 0, 0.5)`
+- Popup box: White background, centered on screen
+- Border radius: `0.25rem`
+- Padding: `1.5rem`
+- Max-width: `500px`
+- Box shadow: `0 0.5rem 1rem rgba(0, 0, 0, 0.15)`
+
+**Typography:**
+- Title: `1.25rem`, font-weight `500`
+- Details: `0.875rem`, color `#6c757d`
+- Font family: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
+
+**Buttons:**
+- Same styling as TitleBar buttons
+- Retry button: Primary color `#0d6efd` background, white text
+- Close button: Secondary color `#6c757d` background, white text
+- Margin between buttons: `0.5rem`
+
+**Loading Spinner:**
+- Centered on page
+- Simple CSS spinner or text "Loading..."
+- Color: `#0d6efd`
+
+## Data Format Specifications
+
+### Timestamp Format
+
+**API Response Format:**
+- Timestamps are returned as strings in format: `"YYYY-MM-DD HH:MM:SS"`
+- Example: `"2024-01-15 14:30:00"`
+
+**Parsing:**
+```javascript
+// Convert to JavaScript Date object
+const date = new Date(timestamp.replace(' ', 'T') + 'Z'); // Add 'T' and 'Z' for UTC
+```
+
+**Display Format:**
+- ContourDateGraph x-axis: `"MMM d"` format (e.g., "Jan 15")
+- Use date formatting library or custom function
+
+**Timezone Handling:**
+- Treat all timestamps as UTC
+- No timezone conversion needed for display
+
+### Number Precision
+
+**Occupancy Values:**
+- Round to 3 decimal places for display
+- Use `Number.toFixed(3)` or `Math.round(value * 1000) / 1000`
+
+**Map Legend Quantiles:**
+- Round to 3 decimal places
+- Format: `"0.123 - 0.456"`
+
+**Graph Tooltip:**
+- Y values: 3 decimal places
+- Support values: 3 decimal places
+- Format: `"y: 0.456\nsupport: 0.789"`
+
+### Null Value Handling
+
+**Map Values:**
+- Null values in `filtered_minimums` result in no fill color for that cell
+- CellMap should check for null and skip coloring
+
+**Occupancy Data:**
+- Null values in occupancy arrays (when depth exceeds maximum) should be filtered out or skipped
+- Do not plot null values on ContourDateGraph
+
+**Default Handling:**
+```javascript
+// Check for null before processing
+if (value !== null && value !== undefined) {
+  // Process value
+}
+```
+
+### API Response Validation
+
+**Expected Response Structure:**
+- All API responses should be JSON
+- Check for expected keys before accessing
+- Handle missing or malformed responses gracefully with error popup
+
+**Example Validation:**
+```javascript
+async function loadGlobalData(scenario_id) {
+  try {
+    const response = await axios.get(`${apiBaseUrl}/v1/depth/scenario/${scenario_id}/scenario`);
+    if (!response.data || !response.data.name) {
+      throw new Error('Invalid scenario data structure');
+    }
+    return response.data;
+  } catch (error) {
+    // Show error popup
+    throw error;
+  }
+}
+```
