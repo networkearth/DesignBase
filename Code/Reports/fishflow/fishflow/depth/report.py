@@ -211,6 +211,8 @@ def build_report(
             - reference_region: str
             - description: str
             - reference_time_window: [datetime, datetime]
+            - zoom: int (zoom for a map)
+            - center: (lon, lat) (center for a map)
         model_df: DataFrame with ['_decision', '_choice', 'probability'] for hypothesis model.
         reference_model_df: DataFrame with ['_decision', '_choice', 'probability']
             for reference model.
@@ -237,6 +239,8 @@ def build_report(
         "reference_region",
         "description",
         "reference_time_window",
+        "zoom",
+        "center",
     }
 
     missing_fields = required_meta_fields - set(meta_data.keys())

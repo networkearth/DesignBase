@@ -255,6 +255,8 @@ class TestBuildReport:
                     "2024-01-01 00:00:00",
                     "2024-01-31 23:59:59",
                 ],
+                "zoom": 5,
+                "center": (-70.0, 42.0),
             }
 
             # Build report

@@ -120,6 +120,8 @@ We need to ensure that we check that the following are in the meta_data passed t
 - reference_region: str
 - description: str
 - reference_time_window: \[datetime, datetime]
+- zoom: integer (zoom for a map)
+- center: (lon, lat) (center for a map)
 
 These (and only these) should be provided in the example in the README.md
 

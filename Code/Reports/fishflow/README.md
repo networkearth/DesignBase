@@ -50,6 +50,8 @@ meta_data = {
     "reference_region": "North Atlantic",
     "description": "Analysis of cod depth preferences in response to temperature",
     "reference_time_window": ["2023-01-01 00:00:00", "2023-12-31 23:59:59"],
+    "zoom": 7,
+    "center": (-67.5, 41.0),
 }
 
 # Create sample model predictions
@@ -191,6 +193,8 @@ Contains scenario metadata and derived statistics:
   "description": "Analysis of cod depth preferences",
   "time_window": ["2024-01-01 06:00:00", "2024-01-01 18:00:00"],
   "reference_time_window": ["2023-01-01 00:00:00", "2023-12-31 23:59:59"],
+  "zoom": 7,
+  "center": [-67.5, 41.0],
   "resolution": 5,
   "grid_size": 1,
   "depth_bins": [10.0, 20.0],
