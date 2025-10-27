@@ -197,9 +197,10 @@ class TestCellDepthsEndpoint:
         response = client.get("/v1/depth/scenario/test_scenario_1/cell_depths")
         assert response.status_code == 200
         data = response.json()
-        assert "cell_depths" in data
-        assert data["cell_depths"]["1"] == 30.0
-        assert data["cell_depths"]["2"] == 20.0
+        # Cell depths should be unwrapped: {cell_id(int) -> maximum_depth_bin(float)}
+        assert "1" in data
+        assert data["1"] == 30.0
+        assert data["2"] == 20.0
 
 
 class TestTimestampsEndpoint:

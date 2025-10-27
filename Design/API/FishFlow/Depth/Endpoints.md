@@ -95,7 +95,10 @@ Model of `CellDepthsSchema
 get_cell_depths(scenario_id: str) --> CellDepths
 ```
 
-Simple pass through of cell_depths for the `scenario_id` specified.
+Simple pass through of cell_depths for the `scenario_id` specified. DO NOT wrap the dict. The format should be:
+
+`{cell_id(int) -> maximum_depth_bin(float)}`
+
 ## `/v1/depth/scenario/{scenario_id}/timestamps`
 ### GET
 #### Model

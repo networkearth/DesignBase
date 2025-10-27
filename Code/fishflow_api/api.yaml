@@ -328,15 +328,10 @@ components:
 
     CellDepths:
       type: object
-      required:
-        - cell_depths
-      properties:
-        cell_depths:
-          type: object
-          additionalProperties:
-            type: number
-            format: float
-          description: Mapping of cell_id (as string keys) to maximum_depth_bin
+      additionalProperties:
+        type: number
+        format: float
+      description: Direct mapping of cell_id (as string keys) to maximum_depth_bin, unwrapped
 
     Timestamps:
       type: object

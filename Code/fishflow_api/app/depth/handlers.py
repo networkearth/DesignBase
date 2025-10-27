@@ -192,7 +192,7 @@ def get_cell_depths(scenario_id: str) -> CellDepths:
         scenario_id: Unique identifier for the scenario
 
     Returns:
-        CellDepths model with cell_id to max depth mapping
+        CellDepths model with cell_id to max depth mapping (unwrapped dict)
 
     Raises:
         HTTPException: If scenario not found or data is corrupt
@@ -206,7 +206,7 @@ def get_cell_depths(scenario_id: str) -> CellDepths:
         # Convert string keys to integers
         cell_depths_int = {int(k): v for k, v in cell_depths_data.items()}
 
-        return CellDepths(cell_depths=cell_depths_int)
+        return CellDepths(cell_depths_int)
 
     except FileNotFoundError:
         raise HTTPException(

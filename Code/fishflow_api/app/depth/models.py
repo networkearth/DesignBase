@@ -49,12 +49,13 @@ class Geometries(RootModel[Dict[str, Any]]):
     root: Dict[str, Any] = Field(..., description="GeoJSON FeatureCollection of polygons with cell_id properties")
 
 
-class CellDepths(BaseModel):
+class CellDepths(RootModel[Dict[int, float]]):
     """Model for cell depths mapping.
 
     Corresponds to CellDepthsSchema - maps cell_id to maximum depth bin.
+    Returns the dict directly without wrapping: {cell_id(int) -> maximum_depth_bin(float)}
     """
-    cell_depths: Dict[int, float] = Field(..., description="Mapping of cell_id to maximum_depth_bin")
+    root: Dict[int, float] = Field(..., description="Mapping of cell_id to maximum_depth_bin")
 
 
 class Timestamps(BaseModel):
