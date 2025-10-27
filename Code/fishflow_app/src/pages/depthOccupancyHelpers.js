@@ -100,7 +100,7 @@ export async function loadOccupancy(scenarioId, cellId, cell_depths, occupancy_d
       }
     );
 
-    // Store the occupancy data (array of arrays)
+    // Store the occupancy data (array of arrays, unwrapped from API)
     occupancy_data[cellId] = response.data;
   } catch (error) {
     throw new Error(`Failed to load occupancy for cell ${cellId}: ${error.message}`);

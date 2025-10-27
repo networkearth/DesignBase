@@ -325,7 +325,7 @@ def get_occupancy(scenario_id: str, cell_id: int, depth_bin: float) -> Occupancy
         depth_bin: Depth bin value
 
     Returns:
-        Occupancy model with timelines array (one per model)
+        Occupancy model with unwrapped timelines array (array of arrays, one timeline per model)
 
     Raises:
         HTTPException: If data not found, invalid parameters, or corrupt data
@@ -369,7 +369,7 @@ def get_occupancy(scenario_id: str, cell_id: int, depth_bin: float) -> Occupancy
             timeline = df.iloc[:, col_idx].tolist()
             timelines.append(timeline)
 
-        return Occupancy(timelines=timelines)
+        return Occupancy(timelines)
 
     except FileNotFoundError:
         raise HTTPException(

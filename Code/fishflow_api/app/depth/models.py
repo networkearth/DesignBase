@@ -80,13 +80,13 @@ class Minimums(RootModel[Dict[int, Dict[float, Dict[int, List[float]]]]]):
     )
 
 
-class Occupancy(BaseModel):
+class Occupancy(RootModel[List[List[float]]]):
     """Model for occupancy timelines.
 
     Corresponds to data from OccupancySchema - timelines for a specific cell and depth bin.
-    Returns an array of timelines, one per model.
+    Returns an array of arrays directly (one timeline per model), unwrapped.
     """
-    timelines: List[List[float]] = Field(
+    root: List[List[float]] = Field(
         ...,
         description="Array of timelines (one per model) for the specified cell_id and depth_bin"
     )

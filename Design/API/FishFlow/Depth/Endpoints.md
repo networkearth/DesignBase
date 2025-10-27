@@ -173,3 +173,5 @@ Pulls the timelines (as an array) for the `cell_id` and `depth_bin` in question.
 See `OccupancySchema` for details on the data structure that we are pulling from for this endpoint.
 
 To translate the `depth_bin` float parameter to a `depth_bin_idx`, find the index of the depth_bin in the `depth_bins` array from the metadata (see `MetaDataSchema`).
+
+DO NOT wrap this set of timelines. An array of array's is what should be returned by the endpoint. 
