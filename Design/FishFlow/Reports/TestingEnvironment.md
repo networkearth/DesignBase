@@ -1,1 +1,0 @@
-When running tests use the `fishflowai` conda environment. Create it if it doesn't already exist. 

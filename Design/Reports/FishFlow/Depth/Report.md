@@ -1,6 +1,10 @@
-## `build_report`
+## Context
+For more context see: 
+- The theory: `../Common/Bayesian Model Interpolation.md`
+- The schemas: `../../../Backend/API/Depth/Data.md`
 
-### Interfaces
+## `build_report`
+`fishflow/depth/report.py`
 
 ```python
 build_report(
@@ -15,16 +19,31 @@ build_report(
 	data_dir
 )
 ```
+#### Inputs
+- `meta_data` - the metadata for this scenario (see `../../../Backend/API/Depth/Data.md:MetaDataSchema)
+- `model_df` - inference of our model over the space and time of interest (`_decision`, `_choice`, `probability`) (mixtures are built from this)
+- `reference_model_df` - inference of our model over the space and time of interest (`_decision`, `_choice`, `probability`) (mixtures are built from this)
+- `context_df` - the context associated with our choices `_decision`, `_choice`, `datetime`, `h3_index`, `depth_bin`
+- `model_actuals_df` - inference of our model over the space and time we want to derive our support from (`_decision`, `_choice`, `probability`) 
+- `reference_model_actuals_df` - inference of our model over the space and time we want to derive our support from (`_decision`, `_choice`, `probability`)
+- `selections_actuals_df` -  the `_decision`, `_choice` pairs actually observed (one choice per decision here)
+- `epsilons` - an array from 0 to 1 indicating the mixture family density we want
+- `data_dir` - the directory to build our `{scenario_id}` directory in and place the following files:
+#### Outputs
+```bash
++-- {scenario_id}
+|   | 
+|   +-- meta_data.json
+|   +-- geometries.geojson
+|   +-- cell_depths.json
+|   +-- minimums.json
+|   +-- timestamps.json
+|   +-- {cell_id}_occupancy.parquet.gz
+```
 
-- **@input** `meta_data` - the metadata for this scenario (see `../../../Backend/API/Depth/Data.md:MetaDataSchema)
-- **@input** `model_df` - inference of our model over the space and time of interest (`_decision`, `_choice`, `probability`) (mixtures are built from this)
-- **@input** `reference_model_df` - inference of our model over the space and time of interest (`_decision`, `_choice`, `probability`) (mixtures are built from this)
-- **@input** `context_df` - the context associated with our choices `_decision`, `_choice`, `datetime`, `h3_index`, `depth_bin`
-- **@input** `model_actuals_df` - inference of our model over the space and time we want to derive our support from (`_decision`, `_choice`, `probability`) 
-- **@input** `reference_model_actuals_df` - inference of our model over the space and time we want to derive our support from (`_decision`, `_choice`, `probability`)
-- **@input** `selections_actuals_df` -  the `_decision`, `_choice` pairs actually observed (one choice per decision here)
-- **@input** `epsilons` - an array from 0 to 1 indicating the mixture family density we want
-- **@input** `data_dir` - the directory to build our `{scenario_id}` directory in and place the following files:
+(documented in `../../../Backend/API/Depth/Data.md`)
+#### Notes
+The purpose of the `build_report` is to fill out the following schema (documented in `../../../Backend/API/Depth/Data.md`): 
 
 ```bash
 +-- {scenario_id}
@@ -37,25 +56,7 @@ build_report(
 |   +-- {cell_id}_occupancy.parquet.gz
 ```
 
-(documented in `../../Backend/API/Depth/Data.md`)
-### Use Cases 
-
-The purpose of the `build_report` is to fill out the following schema (documented in `../../Backend/API/Depth/Data.md`): 
-
-```bash
-+-- {scenario_id}
-|   | 
-|   +-- meta_data.json
-|   +-- geometries.geojson
-|   +-- cell_depths.json
-|   +-- minimums.json
-|   +-- timestamps.json
-|   +-- {cell_id}_occupancy.parquet.gz
-```
-
-for the inference of a model mixture of two depth models over a specific time and place. For more on what a model mixture is see `../Common/Measuring Confidence.md`
-
-### Build
+for the inference of a model mixture of two depth models over a specific time and place. For more on what a model mixture is see `../Common/Bayesian Model Interpolation.md`
 
 Building a mixture is a bit of a web... 
 
@@ -95,48 +96,19 @@ bm2 --> mins[minimums.json]
 ```
 Note that `depth_bins_df` is just the context df's `_decision`, `_choice`, and `depth_bin` columns. 
 
-#### Dependencies
-
-- `../Common/Support.md:compute_support`
-- `../Common/Support.md:compute_mixtures`
-- `../Common/Spacetime.md:build_geojson`
-- `../Common/Spacetime.md:build_timeline`
-- `build_minimums`
-- `build_occupancy`
-- `build_cell_depths`
-- 
-#### Placement
-
-```bash
-fishflow
-|
-+-- reports
-|   |
-|   +-- fishflow
-|   |   |
-|   |   +-- depth
-|   |   |   |
-|   |   |   +-- report.py <--
-```
-
-### Constraints
-
 Given there's going to be a _ton_ of data here we want to build mixtures one cell at a time. That is build each occupancy file one at a time in a loop. 
 
-#### File Writing
-
+##### File Writing
 This function should create a new directory for the `{scenario_id}`. If the directory already exists overwrite it. 
 
 We should end up with as many occupancy parquet files as there are `cell_id`'s
 
-#### Data Checks
-
+##### Data Checks
 `model_df` and `reference_model_df` should have precisely the same `_decision`, `_choice` pairs. 
 
 Separately, `model_actuals_df` and `reference_model_actuals_df` should have the same `_decision` and `_choice` pairs and `selections_actuals_df` should have the same set of `_decision` values with each `_choice` being matched to a choice in `model_actuals_df` (however not all choices will be present as this is the actual selected choices, not all choices available per decision)
 
-#### Checks
-
+##### Checks
 We need to ensure that we check that the following are in the meta_data passed to the function:
 
 - scenario_id: str
@@ -158,123 +130,63 @@ The following should be derived from the data provided
 - support: \[float, float, ..., float] (derived from `compute_support`)
 - time_window: \[datetime, datetime] (from `context_df`)
 
-#### Notes
+The function to use to get the `h3` resolution is `get_resolution` not `h3_get_resolution`.
+#### Dependencies
 
-the function to use to get the `h3` resolution is `get_resolution` not `h3_get_resolution`.
+- `../Common/Support.md:compute_support`
+- `../Common/Support.md:compute_mixtures`
+- `../Common/Spacetime.md:build_geojson`
+- `../Common/Spacetime.md:build_timeline`
+- `build_minimums`
+- `build_occupancy`
+- `build_cell_depths`
 
 ## `build_minimums`
-
-### Interfaces
+`fishflow/depth/report.py`
 
 ```python
 build_minimums(mixture_df, minimums={}) --> minimums
 ```
-
-- **@input** `mixture_df` - `cell_id`, `depth_bin`, `datetime`, `probability`, `epsilon`
-- **@input** `minimums` - `minimums` to add to
-- **@returns** an updated `minimums`
-### Use Cases
-
+#### Inputs
+- `mixture_df` - `cell_id`, `depth_bin`, `datetime`, `probability`, `epsilon`
+- `minimums` - `minimums` to add to: `{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}` where `minimums_array` is the minimum depth occupancy in that cell and month per hour `0-23`. It is an array of length 24 containing floats.
+#### Outputs
+- an updated `minimums`
+#### Notes
 Creates a minimums map as documented in `../../Backend/API/Depth/Data.md:MinimumsSchema`
-### Build
 
 We need to break the timestamp into a month of the year (0-12) and hour of the day (0-23). Second we need to filter to `epsilon=1` (the non-reference model). Then we bin by `cell_id`, `depth_bin`, month of the year, hour of the day, and take the minimum over `probability` per bin. 
-#### Placement
-
-```bash
-fishflow
-|
-+-- reports
-|   |
-|   +-- fishflow
-|   |   |
-|   |   +-- depth
-|   |   |   |
-|   |   |   +-- report.py <--
-```
-
-### Constraints
-
-Note that `minimums` should be of the form:
-
-```python
-{cell_id(int) -> {depth_bin -> {month(int) -> minimums_array}}}
-```
-
-where `minimums_array` is indeed an array representing the minimums per hour (from 0 - 23). 
 
 ## `build_occupancy`
-
-### Interfaces
+`fishflow/depth/report.py`
 
 ```python
 build_occupancy(mixture_df) --> occupancy_df
 ```
-
-- **@input** `mixture_df` - mixture dataframe for a single `cell_id` with at least the columns `depth_bin`, `datetime`, `probability`, `epsilon` 
-- **@returns** `occupancy_df` - a dataframe where the columns represent combinations of depth bin and mixture model (captured by `epsilon`), the rows are the `datetime` in order (earliest at top), and the values are the corresponding `probability`'s
+#### Inputs
+- **@input** `mixture_df` - a mixture `pd.DataFrame` for a single `cell_id` with at least the columns `depth_bin`, `datetime`, `probability`, `epsilon` 
+#### Outputs
+- **@returns** `occupancy_df` - a `pd.DataFrame` where the columns represent combinations of depth bin and mixture model (captured by `epsilon`), the rows are the `datetime` in order (earliest at top), and the values are the corresponding `probability`'s
 
 For the columns we have `model_idx=col // num_depth_bins` and `depth_bin_idx=col % num_depth_bins`. `model_idx` is the index in the sorted `epsilon` array built of the unique `epsilon`'s in `mixture_df`.
 
-For more context see `../../Backend/API/Depth/Data.md:OccupancySchema`
-### Use Cases
-
+#### Notes
 Builds an occupancy dataframe for a specific `cell_id`
-### Build
-#### Placement
 
-```bash
-fishflow
-|
-+-- reports
-|   |
-|   +-- fishflow
-|   |   |
-|   |   +-- depth
-|   |   |   |
-|   |   |   +-- report.py <--
-```
-
-### Constraints
-
-N/A
+For more context see `../../Backend/API/Depth/Data.md:OccupancySchema`
 
 ## `build_cell_depths`
-
-### Interfaces
+`fishflow/depth/report.py`
 
 ```python
 build_cell_depths(context_df) --> cell_depths
 ```
-
-- **@input** `context_df` - a dataframe with at least `cell_id`, `depth_bin`
-- **@returns** `cell_depths` - `{cell_id: max(cell_depth)}`
-
-### Use Cases
-
+#### Inputs
+- `context_df` - a `pd.DataFrame` with at least `cell_id`, `depth_bin`
+#### Outputs
+- `cell_depths` - `{cell_id: max(cell_depth)}`
+#### Notes
 Gets the deepest depth bin per `cell_id`
-
-### Build
-#### Placement
-
-```bash
-fishflow
-|
-+-- reports
-|   |
-|   +-- fishflow
-|   |   |
-|   |   +-- depth
-|   |   |   |
-|   |   |   +-- report.py <--
-```
-
-### Constraints
-
-N/A
-
-
-
 
 
 
