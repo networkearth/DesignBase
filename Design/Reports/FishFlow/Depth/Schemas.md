@@ -1,5 +1,3 @@
-This is just context, the actual data is placed by other components. 
-
 ## Overall Organization
 
 ```bash
@@ -33,6 +31,8 @@ Note as a result of the above folder structure there is one subdirectory for eac
 - depth_bins: \[float, float, ..., float]
 - resolution: int
 - support: \[float, float, ..., float]
+- zoom: integer
+- center: (lon, lat)
 
 ## `GeometriesSchema`
 
