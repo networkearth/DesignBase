@@ -157,10 +157,10 @@ Called whenever the user changes the months selection
 Called whenever the selected hours change or when the filtered timestamps change (due to `filterByMonth`)
 #### Dependencies
 
-- `CellMap`
-- `HourPicker`
-- `MonthPicker`
-- `ContourDateGraph`
+- `../Components/CellMap.md:CellMap`
+- `../Components/Pickers.md:HourPicker`
+- `../Components/Pickers.md:MonthPicker`
+- `../Components/ContourDateGraph.md:ContourDateGraph`
 - `loadGlobalData`
 - `loadOccupancy`
 - `filterByMonth`
