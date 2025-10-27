@@ -172,13 +172,21 @@ class TestGeometriesEndpoint:
     """Test geometries endpoint."""
 
     def test_get_geometries(self, client):
-        """Test getting geometries."""
+        """Test getting geometries.
+
+        The endpoint should return GeoJSON directly with only 'type' and 'features'
+        at the top level, as specified in the design document.
+        """
         response = client.get("/v1/depth/scenario/test_scenario_1/geometries")
         assert response.status_code == 200
         data = response.json()
-        assert "geojson" in data
-        assert data["geojson"]["type"] == "FeatureCollection"
-        assert len(data["geojson"]["features"]) == 2
+        # Response should be GeoJSON directly, not wrapped in {"geojson": ...}
+        assert "type" in data
+        assert "features" in data
+        # Only 'type' and 'features' should be present at top level
+        assert set(data.keys()) == {"type", "features"}
+        assert data["type"] == "FeatureCollection"
+        assert len(data["features"]) == 2
 
 
 class TestCellDepthsEndpoint:

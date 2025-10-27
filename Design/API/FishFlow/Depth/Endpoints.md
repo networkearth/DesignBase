@@ -73,6 +73,9 @@ get_geometries(scenario_id: str) --> Geometries
 ```
 
 Simple pass through of geojson for the `scenario_id` specified.
+#### Notes
+
+Nothing should be added to the geojson. The top level keys should just be `type` and `features`.
 ## `/v1/depth/scenario/{scenario_id}/cell_depths`
 ### GET
 #### Model

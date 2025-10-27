@@ -5,7 +5,7 @@ corresponding to the schemas defined in the design documentation.
 """
 
 from typing import List, Dict, Any, Tuple
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 from datetime import datetime
 
 
@@ -40,12 +40,13 @@ class Scenarios(BaseModel):
     scenarios: List[Scenario] = Field(..., description="List of available scenarios")
 
 
-class Geometries(BaseModel):
+class Geometries(RootModel[Dict[str, Any]]):
     """Model for geometries (GeoJSON).
 
     Corresponds to GeometriesSchema - a GeoJSON FeatureCollection with cell_id properties.
+    Returns GeoJSON directly with top-level keys 'type' and 'features' only.
     """
-    geojson: Dict[str, Any] = Field(..., description="GeoJSON FeatureCollection of polygons with cell_id properties")
+    root: Dict[str, Any] = Field(..., description="GeoJSON FeatureCollection of polygons with cell_id properties")
 
 
 class CellDepths(BaseModel):

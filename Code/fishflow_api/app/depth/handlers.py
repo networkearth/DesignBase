@@ -141,7 +141,7 @@ def get_geometries(scenario_id: str) -> Geometries:
         scenario_id: Unique identifier for the scenario
 
     Returns:
-        Geometries model with GeoJSON data
+        Geometries model with GeoJSON data (returns GeoJSON directly with only 'type' and 'features' keys)
 
     Raises:
         HTTPException: If scenario not found or data is corrupt
@@ -151,7 +151,22 @@ def get_geometries(scenario_id: str) -> Geometries:
         geojson_path = f"depth/{scenario_id}/geometries.geojson"
 
         geojson_data = read_geojson_file(data_dir, geojson_path)
-        return Geometries(geojson=geojson_data)
+
+        # Ensure only 'type' and 'features' keys are present at top level
+        # as specified in the design document
+        if not isinstance(geojson_data, dict):
+            raise ValueError("GeoJSON must be a dictionary")
+
+        if 'type' not in geojson_data or 'features' not in geojson_data:
+            raise ValueError("GeoJSON must contain 'type' and 'features' keys")
+
+        # Return only the essential GeoJSON structure
+        clean_geojson = {
+            'type': geojson_data['type'],
+            'features': geojson_data['features']
+        }
+
+        return Geometries(clean_geojson)
 
     except FileNotFoundError:
         raise HTTPException(
