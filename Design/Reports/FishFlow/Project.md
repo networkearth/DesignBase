@@ -24,14 +24,13 @@ fishflow/
 +-- fishflow/
 |   +-- __init__.py
 |   +-- common/
+|   |   +-- __init__.py
 |   |   +-- support.py
 |   |   +-- spacetime.py
 |   +-- depth/
+|   |   +-- __init__.py
 |   |   +-- report.py
 +-- tests/
-|   +-- test_report.py
-|   +-- test_support.py
-|   +-- test_spacetime.py
 ```
 
 ## Stack
