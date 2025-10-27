@@ -1,0 +1,385 @@
+openapi: 3.0.0
+info:
+  title: FishFlow API
+  description: API serving data from behavioral models for the FishFlow App
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://networkearth.io
+    description: Production server
+  - url: https://www.networkearth.io
+    description: Production server (www)
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Returns 200 OK if the API is up and running
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  message:
+                    type: string
+                    example: FishFlow API is running
+
+  /v1/depth/scenario/scenarios:
+    get:
+      tags:
+        - Depth
+      summary: Get all available scenarios
+      description: Returns a list of all scenarios with their metadata
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenarios'
+        '404':
+          description: No scenarios found
+        '500':
+          description: Server error
+
+  /v1/depth/scenario/{scenario_id}/scenario:
+    get:
+      tags:
+        - Depth
+      summary: Get scenario metadata
+      description: Returns metadata for a specific scenario
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the scenario
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+        '404':
+          description: Scenario not found
+        '500':
+          description: Server error or corrupt data
+
+  /v1/depth/scenario/{scenario_id}/geometries:
+    get:
+      tags:
+        - Depth
+      summary: Get scenario geometries
+      description: Returns GeoJSON geometries for a specific scenario
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the scenario
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Geometries'
+        '404':
+          description: Geometries not found
+        '500':
+          description: Server error or corrupt data
+
+  /v1/depth/scenario/{scenario_id}/cell_depths:
+    get:
+      tags:
+        - Depth
+      summary: Get cell depths
+      description: Returns cell depths mapping for a specific scenario
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the scenario
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CellDepths'
+        '404':
+          description: Cell depths not found
+        '500':
+          description: Server error or corrupt data
+
+  /v1/depth/scenario/{scenario_id}/timestamps:
+    get:
+      tags:
+        - Depth
+      summary: Get timestamps
+      description: Returns ordered list of timestamps for a specific scenario
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the scenario
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timestamps'
+        '404':
+          description: Timestamps not found
+        '500':
+          description: Server error or corrupt data
+
+  /v1/depth/scenario/{scenario_id}/minimums:
+    get:
+      tags:
+        - Depth
+      summary: Get minimum occupancy data
+      description: Returns minimum depth occupancy data for a specific scenario
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the scenario
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Minimums'
+        '404':
+          description: Minimums not found
+        '500':
+          description: Server error or corrupt data
+
+  /v1/depth/scenario/{scenario_id}/occupancy:
+    get:
+      tags:
+        - Depth
+      summary: Get occupancy timelines
+      description: Returns occupancy timelines for a specific cell and depth bin
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the scenario
+        - name: cell_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Cell identifier
+        - name: depth_bin
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          description: Depth bin value (must match a value in metadata depth_bins)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Occupancy'
+        '400':
+          description: Invalid parameters
+        '404':
+          description: Occupancy data not found
+        '500':
+          description: Server error or corrupt data
+
+components:
+  schemas:
+    Scenario:
+      type: object
+      required:
+        - scenario_id
+        - name
+        - species
+        - model
+        - reference_model
+        - region
+        - reference_region
+        - description
+        - time_window
+        - reference_time_window
+        - grid_size
+        - depth_bins
+        - resolution
+        - support
+        - zoom
+        - center
+      properties:
+        scenario_id:
+          type: string
+          description: Unique identifier for the scenario
+        name:
+          type: string
+          description: Human-readable name for the scenario
+        species:
+          type: string
+          description: Species being modeled
+        model:
+          type: string
+          description: Model name
+        reference_model:
+          type: string
+          description: Reference model name
+        region:
+          type: string
+          description: Geographic region
+        reference_region:
+          type: string
+          description: Reference geographic region
+        description:
+          type: string
+          description: Detailed description of the scenario
+        time_window:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 2
+          description: Time window as [start, end] in 'YYYY-MM-DD HH:MM:SS' format
+        reference_time_window:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 2
+          description: Reference time window as [start, end]
+        grid_size:
+          type: integer
+          description: Size of the grid
+        depth_bins:
+          type: array
+          items:
+            type: number
+            format: float
+          description: List of depth bin values
+        resolution:
+          type: integer
+          description: Resolution of the grid
+        support:
+          type: array
+          items:
+            type: number
+            format: float
+          description: Support values for models
+        zoom:
+          type: integer
+          description: Map zoom level
+        center:
+          type: array
+          items:
+            type: number
+            format: float
+          minItems: 2
+          maxItems: 2
+          description: Map center as [longitude, latitude]
+
+    Scenarios:
+      type: object
+      required:
+        - scenarios
+      properties:
+        scenarios:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scenario'
+          description: List of available scenarios
+
+    Geometries:
+      type: object
+      required:
+        - geojson
+      properties:
+        geojson:
+          type: object
+          description: GeoJSON FeatureCollection of polygons with cell_id properties
+
+    CellDepths:
+      type: object
+      required:
+        - cell_depths
+      properties:
+        cell_depths:
+          type: object
+          additionalProperties:
+            type: number
+            format: float
+          description: Mapping of cell_id (as string keys) to maximum_depth_bin
+
+    Timestamps:
+      type: object
+      required:
+        - timestamps
+      properties:
+        timestamps:
+          type: array
+          items:
+            type: string
+          description: Ordered list of timestamps
+
+    Minimums:
+      type: object
+      required:
+        - minimums
+      properties:
+        minimums:
+          type: object
+          description: Nested mapping - cell_id -> depth_bin -> month -> array[24] of hourly minimums
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: number
+                  format: float
+                minItems: 24
+                maxItems: 24
+
+    Occupancy:
+      type: object
+      required:
+        - timelines
+      properties:
+        timelines:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: float
+              nullable: true
+          description: Array of timelines (one per model) for the specified cell_id and depth_bin
