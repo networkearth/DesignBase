@@ -7,6 +7,16 @@ From the directory where `setup.py` lives:
 pip install .
 ```
 
+## Setup
+```python
+setuptools.setup(
+    name="fishflow",
+    version="0.1.0",
+    packages=["fishflow", "fishflow.common", "fishflow.depth"],
+    install_requires=[...],
+    python_requires=">=3.9"
+)
+```
 ## Structure
 ```bash
 fishflow/
@@ -33,6 +43,9 @@ h3 >= 4.0.0 (or h3-py)
 pyarrow >= 6.0.0 (for parquet support)
 geojson >= 2.5.0
 ```
+
+## Tests
+Should be selected and added by the LLM. 
 
 ## Further Designs
 - `Common/`

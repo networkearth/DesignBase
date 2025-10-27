@@ -1,5 +1,5 @@
 ## Context
-For additional context see `Bayesian Model Interpolation.md.md`.
+For additional context see `Bayesian Model Interpolation.md`.
 
 - $D$: a dataset of choices and decisions 
 - $N_D$: the number of decisions in the dataset $D$

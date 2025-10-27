@@ -135,7 +135,7 @@ The function to use to get the `h3` resolution is `get_resolution` not `h3_get_r
 
 - `../Common/Support.md:compute_support`
 - `../Common/Support.md:compute_mixtures`
-- `../Common/Spacetime.md:build_geojson`
+- `../Common/Spacetime.md:build_geojson_h3`
 - `../Common/Spacetime.md:build_timeline`
 - `build_minimums`
 - `build_occupancy`
