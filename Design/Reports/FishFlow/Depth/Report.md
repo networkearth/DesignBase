@@ -1,7 +1,7 @@
 ## Context
 For more context see: 
 - The theory: `../Common/Bayesian Model Interpolation.md`
-- The schemas: `../../../Backend/API/Depth/Data.md`
+- The schemas: `Schemas.md`
 
 ## `build_report`
 `fishflow/depth/report.py`
@@ -20,7 +20,7 @@ build_report(
 )
 ```
 #### Inputs
-- `meta_data` - the metadata for this scenario (see `../../../Backend/API/Depth/Data.md:MetaDataSchema)
+- `meta_data` - the metadata for this scenario (see `Schemas.md:MetaDataSchema)
 - `model_df` - inference of our model over the space and time of interest (`_decision`, `_choice`, `probability`) (mixtures are built from this)
 - `reference_model_df` - inference of our model over the space and time of interest (`_decision`, `_choice`, `probability`) (mixtures are built from this)
 - `context_df` - the context associated with our choices `_decision`, `_choice`, `datetime`, `h3_index`, `depth_bin`
@@ -41,9 +41,9 @@ build_report(
 |   +-- {cell_id}_occupancy.parquet.gz
 ```
 
-(documented in `../../../Backend/API/Depth/Data.md`)
+(documented in `Schemas.md`)
 #### Notes
-The purpose of the `build_report` is to fill out the following schema (documented in `../../../Backend/API/Depth/Data.md`): 
+The purpose of the `build_report` is to fill out the following schema (documented in `Schemas.md`): 
 
 ```bash
 +-- {scenario_id}
@@ -155,7 +155,7 @@ build_minimums(mixture_df, minimums={}) --> minimums
 #### Outputs
 - an updated `minimums`
 #### Notes
-Creates a minimums map as documented in `../../Backend/API/Depth/Data.md:MinimumsSchema`
+Creates a minimums map as documented in `Schemas.md:MinimumsSchema`
 
 We need to break the timestamp into a month of the year (0-12) and hour of the day (0-23). Second we need to filter to `epsilon=1` (the non-reference model). Then we bin by `cell_id`, `depth_bin`, month of the year, hour of the day, and take the minimum over `probability` per bin. 
 
@@ -175,7 +175,7 @@ For the columns we have `model_idx=col // num_depth_bins` and `depth_bin_idx=col
 #### Notes
 Builds an occupancy dataframe for a specific `cell_id`
 
-For more context see `../../Backend/API/Depth/Data.md:OccupancySchema`
+For more context see `Schemas.md:OccupancySchema`
 
 ## `build_cell_depths`
 `fishflow/depth/report.py`

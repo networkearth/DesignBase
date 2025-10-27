@@ -1,5 +1,3 @@
-This is just context, the actual data is placed by other components. 
-
 ## Overall Organization
 
 ```bash
