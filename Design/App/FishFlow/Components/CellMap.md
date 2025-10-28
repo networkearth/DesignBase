@@ -157,7 +157,7 @@ Implementation:
 - **@input** `highColor` - Hex color code for maximum value
 - **@input** `selectedCells` - Array of selected `cell_id` strings
 - **@input** `setSelectedCells` - Setter function for `selectedCells`
-- **@input** `center` - Array `[latitude, longitude]` for map center
+- **@input** `center` - Array `[longitude, latitude]` for map center (not the `MapContainer` from `react-leaflet` needs this as `[latitude, longitude]`)
 - **@input** `zoom` - Number, initial zoom level
 - **@input** `geometries` - GeoJSON geometries for cells
 - **@style** `legend_size` - `"x-small"` | `"small"` | `"medium"` | `"large"` - Size for `MapLegend`

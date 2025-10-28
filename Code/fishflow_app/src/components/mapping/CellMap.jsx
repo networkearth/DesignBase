@@ -38,7 +38,7 @@ const MapRecenterer = ({ center, zoom, geometries }) => {
  * @param {string} props.highColor - Hex color for maximum value
  * @param {string[]} props.selectedCells - Array of selected cell_id strings
  * @param {Function} props.setSelectedCells - Setter function for selectedCells
- * @param {[number, number]} props.center - [latitude, longitude] for map center
+ * @param {[number, number]} props.center - [longitude, latitude] for map center (converted to [latitude, longitude] internally for react-leaflet)
  * @param {number} props.zoom - Initial zoom level
  * @param {Object} props.geometries - GeoJSON geometries for cells
  * @param {"x-small"|"small"|"medium"|"large"} [props.legend_size="medium"] - Size for MapLegend
@@ -62,6 +62,9 @@ const CellMap = ({
   legend_layout = 'vertical',
   legend_background = '#ffffff'
 }) => {
+  // Convert center from [longitude, latitude] to [latitude, longitude] for react-leaflet
+  const leafletCenter = [center[1], center[0]];
+
   // Calculate colors from values
   const colors = interpolateColor(lowColor, highColor, values);
 
@@ -171,7 +174,7 @@ const CellMap = ({
   return (
     <div className="cell-map">
       <MapContainer
-        center={center}
+        center={leafletCenter}
         zoom={zoom}
         className="cell-map__container"
         scrollWheelZoom={true}
@@ -186,7 +189,7 @@ const CellMap = ({
           style={styleFeature}
           onEachFeature={onEachFeature}
         />
-        <MapRecenterer center={center} zoom={zoom} geometries={geometries} />
+        <MapRecenterer center={leafletCenter} zoom={zoom} geometries={geometries} />
       </MapContainer>
 
       {/* Legend */}
