@@ -62,6 +62,7 @@ end
 - As the months or hours or selected cell change the url should change too. That way all of this is shareable with someone else. Something like:
 	- depth_occupancy/{scenario.id}?months=2,3&hours=1,2,3,4,5,6&cell_id=132
 	- React Router should be used for this functionality.
+	- *Note*: we need to both debounce these url changes as well as make sure we only update the url params and don't actually cause a rerender (`window.history.replaceState`) so as to not cause the map to keep rerendering every single time we change any filters. 
 
 ##### Loading & Error States
 

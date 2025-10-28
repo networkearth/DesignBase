@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import TitleBar from '../components/common/TitleBar';
 import MonthPicker from '../components/common/MonthPicker';
@@ -12,7 +12,8 @@ import {
   buildHighlightIndices,
   calculateFilteredMinimums,
   parseUrlParams,
-  updateUrlParams
+  updateUrlParams,
+  debounce
 } from './depthOccupancyHelpers';
 import './DepthOccupancyReport.css';
 
@@ -82,6 +83,12 @@ const DepthOccupancyReport = () => {
   const [isLoadingGlobal, setIsLoadingGlobal] = useState(true);
   const [isLoadingOccupancy, setIsLoadingOccupancy] = useState(false);
   const [loadError, setLoadError] = useState(null);
+
+  // Create debounced URL update function (300ms delay)
+  const debouncedUpdateUrlParams = useMemo(
+    () => debounce(updateUrlParams, 300),
+    []
+  );
 
   // Load global data on mount
   useEffect(() => {
@@ -178,12 +185,12 @@ const DepthOccupancyReport = () => {
     loadCellData();
   }, [selectedCells, cell_depths, scenario_id, occupancy_data]);
 
-  // Update URL when selections change
+  // Update URL when selections change (debounced to avoid excessive updates)
   useEffect(() => {
     if (selectedCells.length > 0 && !isLoadingGlobal) {
-      updateUrlParams(navigate, scenario_id, selectedMonths, selectedHours, selectedCells[0]);
+      debouncedUpdateUrlParams(scenario_id, selectedMonths, selectedHours, selectedCells[0]);
     }
-  }, [selectedMonths, selectedHours, selectedCells, scenario_id, navigate, isLoadingGlobal]);
+  }, [selectedMonths, selectedHours, selectedCells, scenario_id, isLoadingGlobal, debouncedUpdateUrlParams]);
 
   // Navigation handlers
   const handleBack = () => navigate('/depth_occupancy/example');

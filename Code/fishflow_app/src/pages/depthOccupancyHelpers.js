@@ -271,19 +271,44 @@ export function parseUrlParams(searchParams) {
 }
 
 /**
- * Updates URL query parameters without creating browser history entry.
+ * Updates URL query parameters without triggering a rerender or creating browser history entry.
  *
- * @param {Function} navigate - React Router navigate function
+ * Uses window.history.replaceState to update the URL directly without causing React Router
+ * to trigger a rerender, which prevents the map from rerendering unnecessarily.
+ *
  * @param {string} scenarioId - Current scenario ID
  * @param {number[]} months - Selected month numbers (1-12)
  * @param {number[]} hours - Selected hour numbers (0-23)
  * @param {string} cellId - Selected cell ID
  */
-export function updateUrlParams(navigate, scenarioId, months, hours, cellId) {
+export function updateUrlParams(scenarioId, months, hours, cellId) {
   const monthsStr = months.join(',');
   const hoursStr = hours.join(',');
-  navigate(
-    `/depth_occupancy/${scenarioId}?months=${monthsStr}&hours=${hoursStr}&cell_id=${cellId}`,
-    { replace: true }
-  );
+  const newUrl = `/depth_occupancy/${scenarioId}?months=${monthsStr}&hours=${hoursStr}&cell_id=${cellId}`;
+  window.history.replaceState(null, '', newUrl);
+}
+
+/**
+ * Creates a debounced version of a function.
+ *
+ * Returns a function that will only execute after the specified delay has passed
+ * since the last time it was called. Useful for limiting the rate of URL updates
+ * when user selections are changing rapidly.
+ *
+ * @param {Function} func - The function to debounce
+ * @param {number} delay - Delay in milliseconds
+ * @returns {Function} Debounced function
+ */
+export function debounce(func, delay) {
+  let timeoutId = null;
+
+  return (...args) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
 }
