@@ -1,5 +1,5 @@
 ## `build_geojson_h3`
-`fishflow/common/spacetime.py`
+`fishflow_reports/fishflow/common/spacetime.py`
 
 ```python
 build_geojson_h3(context_df) --> geojson, cell_id_df
@@ -15,7 +15,7 @@ build_geojson_h3(context_df) --> geojson, cell_id_df
 Use `h3.cell_to_boundary`
 
 ## `build_timeline`
-`fishflow/common/spacetime.py`
+`fishflow_reports/fishflow/common/spacetime.py`
 
 ```python
 build_timeline(context_df) --> timeline

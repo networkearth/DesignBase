@@ -1,0 +1,130 @@
+/* DepthOccupancyReport Component Styles */
+
+.depth-occupancy-report {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.depth-occupancy-report__title-bar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.depth-occupancy-report__hour-picker {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.depth-occupancy-report__month-picker {
+  grid-column: 1;
+  grid-row: 3 / 5;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-right: 1px solid #dee2e6;
+  overflow-y: auto;
+}
+
+.depth-occupancy-report__cell-map {
+  grid-column: 2;
+  grid-row: 3;
+  position: relative;
+  min-height: 0;
+}
+
+.depth-occupancy-report__contour-date-graph {
+  grid-column: 2;
+  grid-row: 4;
+  height: 300px;
+  background: #ffffff;
+  border-top: 1px solid #dee2e6;
+  position: relative;
+}
+
+/* Loading and error states */
+.depth-occupancy-report--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  border: 4px solid #e9ecef;
+  border-top: 4px solid #0d6efd;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.error-message {
+  background: #f8d7da;
+  border: 1px solid #f5c2c7;
+  color: #842029;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  max-width: 600px;
+  text-align: center;
+}
+
+.error-retry-button {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #212529;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.error-retry-button:hover {
+  background: rgba(13, 110, 253, 0.1);
+}
+
+.graph-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f8f9fa;
+}
+
+.graph-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6c757d;
+  font-size: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}

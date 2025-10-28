@@ -7,7 +7,7 @@ For additional context see `Bayesian Model Interpolation.md`.
 - *Model* - a model we are trying to evaluate
 - *Reference Model* - a trusted reference model we're going to use to evaluate our confidence in the *model*. (See `Bayesian Model Interpolation.md`)
 ## `log_likelihood_member`
-`fishflow/common/support.py`
+`fishflow_reports/fishflow/common/support.py`
 
 ```python
 log_likelihood_member(
@@ -39,7 +39,7 @@ We can then get the log likelihood of the data given the guess $G_{\epsilon}$ as
 
 $$\sum_i \log{P(D_i| \epsilon)}$$
 ## `prob_members`
-`fishflow/common/support.py`
+`fishflow_reports/fishflow/common/support.py`
 
 ```python
 prob_members(
@@ -79,7 +79,7 @@ $$P(\epsilon_i|D)=\frac{r_i}{\sum_j r_j}$$
 and return our result!
 
 ## `build_model_matrices`
-`fishflow/common/support.py`
+`fishflow_reports/fishflow/common/support.py`
 
 ```python
 build_model_matrices(model_df, reference_model_df, selections_df)
@@ -95,7 +95,7 @@ build_model_matrices(model_df, reference_model_df, selections_df)
 - `selection_matrix` - $C$ from `prob_members`
 
 ## `compute_support`
-`fishflow/common/support.py`
+`fishflow_reports/fishflow/common/support.py`
 
 ```python
 compute_support(model_df, reference_model_df, selections_df, epsilons)
@@ -137,7 +137,7 @@ n9 --> n11[support]
 - `build_model_matrices`
 
 ## `compute_mixtures`
-`fishflow/common/support.py`
+`fishflow_reports/fishflow/common/support.py`
 
 ```python
 compute_mixtures(model_df, reference_model_df, epsilons)

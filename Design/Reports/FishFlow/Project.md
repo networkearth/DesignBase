@@ -23,7 +23,7 @@ setuptools.setup(
 ```
 ## Structure
 ```bash
-fishflow/
+fishflow_reports/
 +-- setup.py
 +-- fishflow/
 |   +-- __init__.py

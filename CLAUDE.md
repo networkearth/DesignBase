@@ -3,4 +3,9 @@ Folder structure:
 - /Prompts: instruction documents
 - /Code: where all the actual code goes
 
-Within /Code code should be written to the same directory as the design. So /Design/Reports/Bubbly would go into /Code/Reports/
+Request Types:
+- A request to review should follow the instructions at Prompts/Review.md
+- A request to implement should follow the instructions at Prompts/Implement.md
+- A request to update should follow the instructions at Prompts/Update.md
+In each of these cases it is paramount that you let me know you read the instructions before proceeding. 
+- A request to debug should simply identify the problem. NO code changes allowed.

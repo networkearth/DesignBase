@@ -1,0 +1,62 @@
+/* TitleBar Component Styles */
+
+.title-bar {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  color: #212529;
+  width: 100%;
+}
+
+.title-bar__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+.title-bar__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.title-bar__report-type {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.title-bar__scenario-name {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.title-bar__buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.title-bar__button {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #212529;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-family: inherit;
+}
+
+.title-bar__button:hover {
+  background: rgba(13, 110, 253, 0.1);
+}
+
+.title-bar__button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.title-bar__button:active {
+  transform: translateY(1px);
+}

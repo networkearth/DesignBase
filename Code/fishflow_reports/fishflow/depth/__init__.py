@@ -1,0 +1,1 @@
+"""Depth occupancy report generation."""

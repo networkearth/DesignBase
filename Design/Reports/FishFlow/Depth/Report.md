@@ -4,7 +4,7 @@ For more context see:
 - The schemas: `Schemas.md`
 
 ## `build_report`
-`fishflow/depth/report.py`
+`fishflow_reports/fishflow/depth/report.py`
 
 ```python
 build_report(
@@ -144,7 +144,7 @@ The function to use to get the `h3` resolution is `get_resolution` not `h3_get_r
 - `build_cell_depths`
 
 ## `build_minimums`
-`fishflow/depth/report.py`
+`fishflow_reports/fishflow/depth/report.py`
 
 ```python
 build_minimums(mixture_df, minimums={}) --> minimums
@@ -160,7 +160,7 @@ Creates a minimums map as documented in `Schemas.md:MinimumsSchema`
 We need to break the timestamp into a month of the year (0-12) and hour of the day (0-23). Second we need to filter to `epsilon=1` (the non-reference model). Then we bin by `cell_id`, `depth_bin`, month of the year, hour of the day, and take the minimum over `probability` per bin. 
 
 ## `build_occupancy`
-`fishflow/depth/report.py`
+`fishflow_reports/fishflow/depth/report.py`
 
 ```python
 build_occupancy(mixture_df) --> occupancy_df
@@ -178,7 +178,7 @@ Builds an occupancy dataframe for a specific `cell_id`
 For more context see `Schemas.md:OccupancySchema`
 
 ## `build_cell_depths`
-`fishflow/depth/report.py`
+`fishflow_reports/fishflow/depth/report.py`
 
 ```python
 build_cell_depths(context_df) --> cell_depths

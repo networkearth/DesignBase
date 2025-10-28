@@ -1,0 +1,129 @@
+/* CheckBoxPicker Component Styles */
+
+.checkbox-picker {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #212529;
+  width: 100%;
+}
+
+.checkbox-picker__title {
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.checkbox-picker__grid {
+  display: grid;
+  width: 100%;
+}
+
+/* Layout: Horizontal */
+.checkbox-picker__grid--horizontal {
+  grid-auto-flow: column;
+}
+
+/* Layout: Vertical */
+.checkbox-picker__grid--vertical {
+  grid-auto-flow: row;
+}
+
+/* Justify options for horizontal layout */
+.checkbox-picker__grid--horizontal.checkbox-picker__grid--left {
+  justify-content: start;
+}
+
+.checkbox-picker__grid--horizontal.checkbox-picker__grid--right {
+  justify-content: end;
+}
+
+.checkbox-picker__grid--horizontal.checkbox-picker__grid--center {
+  justify-content: center;
+}
+
+/* Justify options for vertical layout */
+.checkbox-picker__grid--vertical.checkbox-picker__grid--top {
+  align-content: start;
+}
+
+.checkbox-picker__grid--vertical.checkbox-picker__grid--bottom {
+  align-content: end;
+}
+
+.checkbox-picker__grid--vertical.checkbox-picker__grid--center {
+  align-content: center;
+}
+
+/* Box base styles */
+.checkbox-picker__box {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.checkbox-picker__box:hover {
+  background: rgba(13, 110, 253, 0.1);
+}
+
+.checkbox-picker__box:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.checkbox-picker__box--selected {
+  background: #0d6efd;
+  color: #ffffff;
+  border-color: #0d6efd;
+}
+
+.checkbox-picker__box--selected:hover {
+  background: #0b5ed7;
+  border-color: #0b5ed7;
+}
+
+/* Size variations - Small */
+.checkbox-picker--small .checkbox-picker__title {
+  font-size: 0.875rem;
+}
+
+.checkbox-picker--small .checkbox-picker__box {
+  font-size: 0.875rem;
+  padding: 0.5rem;
+}
+
+.checkbox-picker--small .checkbox-picker__grid {
+  gap: 0.5rem;
+}
+
+/* Size variations - Medium (default) */
+.checkbox-picker--medium .checkbox-picker__title {
+  font-size: 1rem;
+}
+
+.checkbox-picker--medium .checkbox-picker__box {
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+.checkbox-picker--medium .checkbox-picker__grid {
+  gap: 0.5rem;
+}
+
+/* Size variations - Large */
+.checkbox-picker--large .checkbox-picker__title {
+  font-size: 1.25rem;
+}
+
+.checkbox-picker--large .checkbox-picker__box {
+  font-size: 1.25rem;
+  padding: 1rem;
+}
+
+.checkbox-picker--large .checkbox-picker__grid {
+  gap: 0.75rem;
+}
