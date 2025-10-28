@@ -3,4 +3,6 @@
 *.egg-info
 build/
 example/
+example_fake/
 package-lock.json
+*.csv.gz
