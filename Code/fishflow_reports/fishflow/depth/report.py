@@ -89,7 +89,7 @@ def build_minimums(
     return minimums
 
 
-def build_occupancy(mixture_df: pd.DataFrame) -> pd.DataFrame:
+def build_occupancy(mixture_df: pd.DataFrame, depth_bins: np.ndarray) -> pd.DataFrame:
     """
     Build occupancy dataframe for a single cell.
 
@@ -100,12 +100,13 @@ def build_occupancy(mixture_df: pd.DataFrame) -> pd.DataFrame:
     Args:
         mixture_df: DataFrame for a single cell_id with columns 'depth_bin',
             'datetime', 'probability', 'epsilon'.
+        depth_bins: Array (ordered) of all depth_bins in the scenario.
 
     Returns:
         DataFrame where:
         - Index is datetime (sorted)
         - Columns are integer indices (one per model-depth combination)
-        - Values are occupancy probabilities
+        - Values are occupancy probabilities (null for missing depth bins)
 
     Raises:
         ValueError: If required columns are missing or data is invalid.
@@ -118,33 +119,35 @@ def build_occupancy(mixture_df: pd.DataFrame) -> pd.DataFrame:
     # Get sorted unique values
     unique_datetimes = sorted(mixture_df['datetime'].unique())
     unique_epsilons = sorted(mixture_df['epsilon'].unique())
-    unique_depth_bins = sorted(mixture_df['depth_bin'].unique())
 
+    # Use provided depth_bins instead of just those in mixture_df
+    # This ensures missing depth bins have null columns
     n_models = len(unique_epsilons)
-    n_depth_bins = len(unique_depth_bins)
+    n_depth_bins = len(depth_bins)
     n_times = len(unique_datetimes)
 
     # Create column count
     n_cols = n_models * n_depth_bins
 
-    # Initialize output array
+    # Initialize output array with NaN for all values
     occupancy_array = np.full((n_times, n_cols), np.nan)
 
     # Create index mappings
     datetime_to_idx = {dt: i for i, dt in enumerate(unique_datetimes)}
     epsilon_to_idx = {eps: i for i, eps in enumerate(unique_epsilons)}
-    depth_bin_to_idx = {db: i for i, db in enumerate(unique_depth_bins)}
+    depth_bin_to_idx = {db: i for i, db in enumerate(depth_bins)}
 
-    # Fill array
-    for _, row in mixture_df.iterrows():
-        time_idx = datetime_to_idx[row['datetime']]
-        model_idx = epsilon_to_idx[row['epsilon']]
-        depth_idx = depth_bin_to_idx[row['depth_bin']]
+    # Vectorized filling using advanced indexing
+    # Create arrays of indices for each row in mixture_df
+    time_indices = mixture_df['datetime'].map(datetime_to_idx).values
+    model_indices = mixture_df['epsilon'].map(epsilon_to_idx).values
+    depth_indices = mixture_df['depth_bin'].map(depth_bin_to_idx).values
 
-        # Column follows the formula: model_idx * n_depth_bins + depth_idx
-        col_idx = model_idx * n_depth_bins + depth_idx
+    # Calculate column indices: model_idx * n_depth_bins + depth_idx
+    col_indices = model_indices * n_depth_bins + depth_indices
 
-        occupancy_array[time_idx, col_idx] = row['probability']
+    # Fill array using vectorized indexing
+    occupancy_array[time_indices, col_indices] = mixture_df['probability'].values
 
     # Create dataframe
     occupancy_df = pd.DataFrame(
@@ -348,7 +351,7 @@ def build_report(
         cell_mixture = mixtures_with_cells[mixtures_with_cells['cell_id'] == cell_id].copy()
 
         # Build occupancy dataframe
-        occupancy_df = build_occupancy(cell_mixture)
+        occupancy_df = build_occupancy(cell_mixture, depth_bins)
 
         # Save as compressed parquet
         occupancy_file = os.path.join(output_dir, f'{cell_id}_occupancy.parquet.gz')

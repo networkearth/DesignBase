@@ -100,7 +100,8 @@ class TestBuildOccupancy:
             'epsilon': [1.0, 1.0, 1.0, 1.0]
         })
 
-        occupancy = build_occupancy(mixture_df)
+        depth_bins = np.array([10.0, 20.0])
+        occupancy = build_occupancy(mixture_df, depth_bins)
 
         # Check shape: 2 times, 2 depth bins, 1 epsilon = 2 columns
         assert occupancy.shape == (2, 2)
@@ -117,7 +118,8 @@ class TestBuildOccupancy:
             'epsilon': [0.0, 0.0, 0.5, 0.5, 1.0, 1.0]
         })
 
-        occupancy = build_occupancy(mixture_df)
+        depth_bins = np.array([10.0, 20.0])
+        occupancy = build_occupancy(mixture_df, depth_bins)
 
         # 3 epsilons, 2 depth bins = 6 columns
         assert occupancy.shape[1] == 6
@@ -143,8 +145,35 @@ class TestBuildOccupancy:
             # Missing probability and epsilon
         })
 
+        depth_bins = np.array([10.0])
         with pytest.raises(ValueError, match="must have columns"):
-            build_occupancy(bad_df)
+            build_occupancy(bad_df, depth_bins)
+
+    def test_missing_depth_bins(self):
+        """Test that missing depth bins result in null columns."""
+        mixture_df = pd.DataFrame({
+            'depth_bin': [10.0, 10.0],  # Only depth bin 10.0 present
+            'datetime': ['2023-01-01', '2023-01-02'],
+            'probability': [0.3, 0.4],
+            'epsilon': [1.0, 1.0]
+        })
+
+        # Provide depth bins that include one not in the mixture_df
+        depth_bins = np.array([10.0, 20.0, 30.0])
+        occupancy = build_occupancy(mixture_df, depth_bins)
+
+        # Should have 2 times, 3 depth bins, 1 epsilon = 3 columns
+        assert occupancy.shape == (2, 3)
+
+        # First column (depth_bin 10.0) should have values
+        assert occupancy.iloc[0, 0] == 0.3
+        assert occupancy.iloc[1, 0] == 0.4
+
+        # Second and third columns (depth_bins 20.0, 30.0) should be null
+        assert pd.isna(occupancy.iloc[0, 1])
+        assert pd.isna(occupancy.iloc[1, 1])
+        assert pd.isna(occupancy.iloc[0, 2])
+        assert pd.isna(occupancy.iloc[1, 2])
 
 
 class TestBuildCellDepths:

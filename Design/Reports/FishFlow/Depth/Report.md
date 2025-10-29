@@ -163,19 +163,22 @@ We need to break the timestamp into a month of the year (0-12) and hour of the d
 `fishflow_reports/fishflow/depth/report.py`
 
 ```python
-build_occupancy(mixture_df) --> occupancy_df
+build_occupancy(mixture_df, depth_bins) --> occupancy_df
 ```
 #### Inputs
 - **@input** `mixture_df` - a mixture `pd.DataFrame` for a single `cell_id` with at least the columns `depth_bin`, `datetime`, `probability`, `epsilon` 
+- **@input** `depth_bins` - an array (ordered) of all depth_bins in the scenario
 #### Outputs
 - **@returns** `occupancy_df` - a `pd.DataFrame` where the columns represent combinations of depth bin and mixture model (captured by `epsilon`), the rows are the `datetime` in order (earliest at top), and the values are the corresponding `probability`'s
 
-For the columns we have `model_idx=col // num_depth_bins` and `depth_bin_idx=col % num_depth_bins`. `model_idx` is the index in the sorted `epsilon` array built of the unique `epsilon`'s in `mixture_df`.
+For the columns we have `model_idx=col // num_depth_bins` and `depth_bin_idx=col % num_depth_bins`. `model_idx` is the index in the sorted `epsilon` array built of the unique `epsilon`'s in `mixture_df`. If there are depth bins missing in the mixture_df then the corresponding columns should have null entries. 
 
 #### Notes
 Builds an occupancy dataframe for a specific `cell_id`
 
 For more context see `Schemas.md:OccupancySchema`
+
+This operation should be vectorized for speed. 
 
 ## `build_cell_depths`
 `fishflow_reports/fishflow/depth/report.py`
